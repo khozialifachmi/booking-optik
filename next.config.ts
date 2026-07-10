@@ -3,9 +3,6 @@ import type { NextConfig } from "next";
 // Triggering config reload to refresh proxy/middleware cache
 
 const nextConfig: NextConfig = {
-  // Disable cacheComponents to prevent infinite hydration/reload loops
-  cacheComponents: false,
-
   // Aktifkan kompresi gzip untuk semua response
   compress: true,
   

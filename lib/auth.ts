@@ -8,10 +8,10 @@ export const auth = betterAuth({
         provider: "postgresql", 
     }),
     trustedOrigins: [
+        process.env.BETTER_AUTH_URL || "http://localhost:3000",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "http://192.168.1.15:3000"
-    ],
+    ].filter((v, i, a) => a.indexOf(v) === i), // deduplicate
     logger: {
         level: "info",
     },

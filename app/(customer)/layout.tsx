@@ -2,7 +2,6 @@ import { Header } from "@/components/layout/header";
 import { CUSTOMER_NAV } from "@/lib/constants";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
 export default async function CustomerLayout({
