@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  emailVerified  Boolean         @default(false)
+  image          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  phone          String?
+  role           String          @default("customer")
+  accounts       Account[]
+  bookings       Booking[]
+  medicalRecords MedicalRecord[]
+  sessions       Session[]
+  emailChangeCount Int             @default(0)
+  profile          UserProfile?
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id           String    @id @default(uuid())
+  userId       String
+  accountId    String
+  providerId   String
+  accessToken  String?
+  refreshToken String?
+  expiresAt    DateTime?
+  password     String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verifications")
+}
+
+model UserProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  role      String   @default("customer")
+  phone     String
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model Booking {
+  id                   String         @id @default(uuid())
+  userId               String
+  bookingDate          DateTime       @db.Date
+  queueNumber          Int?
+  serviceType          String
+  estimatedServiceTime DateTime
+  actualServiceTime    DateTime?
+  status               String         @default("unverified")
+  notes                String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  sortPriority         Float?
+  callCount            Int            @default(0)
+  skippedAtQueue       Int?
+  paymentProof         String?
+  userResponse         String?        @default("none")
+  user                 User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicalRecord        MedicalRecord?
+
+  @@index([bookingDate, queueNumber])
+  @@index([status])
+  @@map("bookings")
+}
+
+model MedicalRecord {
+  id        String   @id @default(uuid())
+  userId    String
+  bookingId String   @unique
+  rightSph  String?
+  rightCyl  String?
+  rightAxis String?
+  leftSph   String?
+  leftCyl   String?
+  leftAxis  String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("medical_records")
+}
+
+model QueueSettings {
+  id                 String   @id @default(uuid())
+  avgServiceDuration Int      @default(20)
+  openTime           String   @default("08:00")
+  closeTime          String   @default("17:00")
+  maxBookingsPerDay  Int      @default(30)
+  effectiveDate      DateTime @db.Date
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("queue_settings")
+}
+
+model Cashflow {
+  id          String   @id @default(uuid())
+  type        String   // "income" or "expense"
+  amount      Int
+  description String
+  date        DateTime @db.Date
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+  @@index([type])
+  @@map("cashflows")
+}

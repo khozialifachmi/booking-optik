@@ -1,0 +1,15 @@
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+// Next.js 16: middleware telah diganti nama menjadi proxy
+// Auth & role check sudah ditangani di masing-masing layout server component
+export function proxy(request: NextRequest) {
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: [
+    // Lewati api, file statis dan internal Next.js
+    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+  ],
+}
