@@ -148,7 +148,7 @@ export default async function BookingListPage() {
                                     </Badge>
                                 </div>
                                 <p className="text-sm text-muted-foreground">
-                                    Tgl: {new Date(booking.bookingDate).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })} | Jam Daftar: {new formatJakartaTime(Date(booking.createdAt))} WIB | Nomor: {booking.queueNumber ? `A-${booking.queueNumber.toString().padStart(2, "0")}` : "Verifikasi"}
+                                    Tgl: {new Date(booking.bookingDate).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })} | Jam Daftar: {formatJakartaTime(booking.createdAt)} WIB | Nomor: {booking.queueNumber ? `A-${booking.queueNumber.toString().padStart(2, "0")}` : "Verifikasi"}
                                 </p>
                             </div>
                         </div>
@@ -164,7 +164,7 @@ export default async function BookingListPage() {
                                   return currentSession?.user?.name || "Pelanggan";
                                 })()}
                                 serviceType={booking.serviceType}
-                                bookingTime={new formatJakartaTime(Date(booking.createdAt))}
+                                bookingTime={formatJakartaTime(booking.createdAt)}
                                 bookingDate={new Date(booking.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                               />
                            </div>
