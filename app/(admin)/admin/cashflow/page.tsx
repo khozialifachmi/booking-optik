@@ -67,7 +67,10 @@ export default async function CashflowPage(props: {
 
   const cashflows = await prisma.cashflow.findMany({
     where: dateFilter,
-    orderBy: { date: "desc" },
+    orderBy: [
+      { date: "desc" },
+      { createdAt: "asc" }
+    ],
   });
 
   const bookings = await prisma.booking.findMany({

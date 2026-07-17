@@ -70,7 +70,7 @@ export default async function AdminBookingsPage(props: {
     },
     orderBy: [
       { bookingDate: 'desc' },
-      { queueNumber: 'asc' }
+      { createdAt: 'asc' }
     ],
     take: 100
   });

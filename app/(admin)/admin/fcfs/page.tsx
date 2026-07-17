@@ -90,10 +90,10 @@ export default async function AdminFCFSPage(props: {
       }
     },
     orderBy: targetDate ? [
-      { queueNumber: 'asc' }
+      { createdAt: 'asc' }
     ] : [
       { bookingDate: 'desc' },
-      { queueNumber: 'asc' }
+      { createdAt: 'asc' }
     ],
     take: 100
   });

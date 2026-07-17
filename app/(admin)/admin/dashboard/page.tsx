@@ -232,7 +232,7 @@ async function AdminDashboardContent({
         { createdAt: 'asc' }
       ] : [
         { bookingDate: 'desc' },
-        { createdAt: 'desc' }
+        { createdAt: 'asc' }
       ],
       take: 100
     });
