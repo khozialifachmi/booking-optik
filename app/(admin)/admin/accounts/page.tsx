@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { SearchBar } from "@/components/admin/search-bar";
 import { DateFilter } from "@/components/admin/date-filter";
 import { UserCheck, Users, ShieldCheck, Calendar } from "lucide-react";
+import { DeleteAccountButton } from "@/components/admin/delete-account-button";
 
 export const dynamic = "force-dynamic";
 
@@ -149,6 +150,7 @@ export default async function AdminAccountsPage(props: {
                   <th className="px-6 py-4 text-left">No. Telepon</th>
                   <th className="px-6 py-4 text-left">Peran (Role)</th>
                   <th className="px-6 py-4 text-left">Tgl Registrasi</th>
+                  <th className="px-6 py-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/50">
@@ -174,6 +176,15 @@ export default async function AdminAccountsPage(props: {
                         hour: '2-digit',
                         minute: '2-digit'
                       })}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {user.role !== 'admin' && (
+                        <DeleteAccountButton 
+                          userId={user.id} 
+                          name={user.name} 
+                          email={user.email} 
+                        />
+                      )}
                     </td>
                   </tr>
                 ))}

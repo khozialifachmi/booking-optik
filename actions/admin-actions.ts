@@ -437,3 +437,21 @@ export async function deleteCustomerAction(name: string, phone: string) {
         return { success: false, error: error.message };
     }
 }
+
+export async function deleteAccountAction(userId: string) {
+    try {
+        await prisma.user.delete({
+            where: { id: userId }
+        });
+        
+        revalidatePath("/admin/accounts");
+        revalidatePath("/admin/customers");
+        revalidatePath("/admin/bookings");
+        revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/fcfs");
+        
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
