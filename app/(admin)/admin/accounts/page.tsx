@@ -80,7 +80,7 @@ export default async function AdminAccountsPage(props: {
 
       {/* Stats Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="border-border/50 shadow-sm bg-white">
+        <Card className="border-border/50 shadow-sm bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Akun</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -91,7 +91,7 @@ export default async function AdminAccountsPage(props: {
           </CardContent>
         </Card>
         
-        <Card className="border-border/50 shadow-sm bg-white">
+        <Card className="border-border/50 shadow-sm bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pelanggan</CardTitle>
             <UserCheck className="h-4 w-4 text-emerald-500" />
@@ -102,7 +102,7 @@ export default async function AdminAccountsPage(props: {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 shadow-sm bg-white">
+        <Card className="border-border/50 shadow-sm bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Administrator</CardTitle>
             <ShieldCheck className="h-4 w-4 text-primary" />
@@ -141,9 +141,9 @@ export default async function AdminAccountsPage(props: {
               <tbody className="divide-y divide-border/50">
                 {users.map((user) => (
                   <tr key={user.id} className="transition-colors hover:bg-muted/20">
-                    <td className="px-6 py-4 font-semibold text-gray-900">{user.name}</td>
-                    <td className="px-6 py-4 text-gray-600">{user.email}</td>
-                    <td className="px-6 py-4 text-gray-600 font-mono">{user.phone || "-"}</td>
+                    <td className="px-6 py-4 font-semibold text-foreground">{user.name}</td>
+                    <td className="px-6 py-4 text-muted-foreground">{user.email}</td>
+                    <td className="px-6 py-4 text-muted-foreground font-mono">{user.phone || "-"}</td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                         user.role === 'admin' 
@@ -153,7 +153,7 @@ export default async function AdminAccountsPage(props: {
                         {user.role === 'admin' ? 'Administrator' : 'Customer'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-500 italic">
+                    <td className="px-6 py-4 text-muted-foreground italic">
                       {new Date(user.createdAt).toLocaleDateString("id-ID", {
                         day: 'numeric',
                         month: 'long',
