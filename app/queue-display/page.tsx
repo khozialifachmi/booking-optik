@@ -107,7 +107,9 @@ export default async function QueueDisplayPage() {
                 <p className="mt-4 text-lg font-bold text-emerald-900 dark:text-emerald-200 truncate px-2">
                   {queueData.completed.length > 0 ? queueData.completed[0].name : "-"}
                 </p>
-                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">Pemeriksaan telah selesai</p>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">
+                  {queueData.completed.length > 0 ? "Pemeriksaan telah selesai" : "Belum ada yang selesai"}
+                </p>
               </CardContent>
             </Card>
           </div>

@@ -109,10 +109,10 @@ export function LiveQueueSection({ data }: LiveQueueSectionProps) {
                  <div className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-muted text-muted-foreground shadow-none mb-4">
                    <span className="text-4xl font-bold">-</span>
                  </div>
-                 <p className="text-lg font-medium text-muted-foreground text-center truncate w-full px-4">
-                   Belum ada yang selesai
+                 <p className="text-lg font-bold text-muted-foreground text-center truncate w-full px-4">
+                   -
                  </p>
-                 <p className="text-[10px] text-muted-foreground mt-2 font-semibold">-</p>
+                 <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-2 font-semibold">Belum ada yang selesai</p>
                </>
              )}
           </CardContent>
