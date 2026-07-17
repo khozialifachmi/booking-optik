@@ -179,8 +179,8 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                 <Clock className="h-4 w-4 text-amber-700 animate-pulse" />
               </div>
               <div className="flex-1">
-                <p className="text-amber-900 font-extrabold text-sm uppercase tracking-wide">Menunggu Konfirmasi Admin</p>
-                <p className="text-amber-700 text-xs">Pendaftaran Anda sedang diverifikasi oleh admin</p>
+                <p className="text-amber-900 dark:text-amber-500 font-extrabold text-sm uppercase tracking-wide">Menunggu Konfirmasi Admin</p>
+                <p className="text-amber-600 dark:text-amber-400 text-xs font-medium">Pendaftaran Anda sedang diverifikasi oleh admin</p>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-amber-50 animate-ping" />

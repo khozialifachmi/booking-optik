@@ -129,14 +129,14 @@ export function ProfileForm({ initialData, isAdmin = false }: ProfileFormProps) 
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <Card className="border-none shadow-xl bg-white/80 backdrop-blur-md overflow-hidden">
+      <Card className="border-none shadow-xl bg-background/80 backdrop-blur-md overflow-hidden">
         <div className="h-32 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent relative">
             <div className="absolute -bottom-12 left-8">
                 <div 
                   className="relative group cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                    <Avatar className="h-24 w-24 border-4 border-white shadow-lg transition-transform group-hover:scale-105 group-active:scale-95">
+                    <Avatar className="h-24 w-24 border-4 border-background shadow-lg transition-transform group-hover:scale-105 group-active:scale-95">
                         <AvatarImage src={previewImage || ""} />
                         <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
                             {initialData.name.charAt(0).toUpperCase()}
@@ -155,7 +155,7 @@ export function ProfileForm({ initialData, isAdmin = false }: ProfileFormProps) 
                         e.stopPropagation();
                         fileInputRef.current?.click();
                       }}
-                      className="absolute bottom-0 right-0 p-1.5 bg-white rounded-full shadow-md border border-gray-100 hover:bg-gray-50 transition-all hover:scale-110 active:scale-90 cursor-pointer z-10"
+                      className="absolute bottom-0 right-0 p-1.5 bg-background rounded-full shadow-md border border-border hover:bg-accent transition-all hover:scale-110 active:scale-90 cursor-pointer z-10"
                       title="Ganti Foto"
                     >
                         <Camera className="h-4 w-4 text-primary" />
@@ -172,7 +172,7 @@ export function ProfileForm({ initialData, isAdmin = false }: ProfileFormProps) 
                     }}
                     className="absolute -right-24 bottom-2 flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-600 transition-colors cursor-pointer group"
                   >
-                    <div className="p-1.5 rounded-full bg-red-50 group-hover:bg-red-100 transition-colors">
+                    <div className="p-1.5 rounded-full bg-red-50 dark:bg-red-950/50 group-hover:bg-red-100 dark:group-hover:bg-red-900/50 transition-colors">
                       <Trash2 className="h-3.5 w-3.5" />
                     </div>
                     Hapus Foto
@@ -208,7 +208,7 @@ export function ProfileForm({ initialData, isAdmin = false }: ProfileFormProps) 
                 id="name"
                 {...register("name")}
                 placeholder="Nama sesuai KTP"
-                className="bg-white/50 border-gray-200 focus:border-primary focus:ring-primary/20 transition-all"
+                className="bg-background/50 border-input focus:border-primary focus:ring-primary/20 transition-all"
               />
               {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
             </div>
@@ -222,7 +222,7 @@ export function ProfileForm({ initialData, isAdmin = false }: ProfileFormProps) 
                 id="email"
                 {...register("email")}
                 disabled={!isEmailEditable}
-                className={!isEmailEditable ? "bg-gray-50/50 border-gray-100 text-gray-500 cursor-not-allowed opacity-70" : "bg-white/50 border-gray-200 focus:border-primary focus:ring-primary/20 transition-all"}
+                className={!isEmailEditable ? "bg-muted/50 border-border text-muted-foreground cursor-not-allowed opacity-70" : "bg-background/50 border-input focus:border-primary focus:ring-primary/20 transition-all"}
               />
               {!isEmailEditable ? (
                 <p className="text-[10px] text-muted-foreground italic mt-1 flex items-center gap-1">
@@ -244,7 +244,7 @@ export function ProfileForm({ initialData, isAdmin = false }: ProfileFormProps) 
                 id="phone"
                 {...register("phone")}
                 placeholder="Contoh: 08123456789"
-                className="bg-white/50 border-gray-200 focus:border-primary focus:ring-primary/20 transition-all"
+                className="bg-background/50 border-input focus:border-primary focus:ring-primary/20 transition-all"
               />
               {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
             </div>
@@ -259,20 +259,20 @@ export function ProfileForm({ initialData, isAdmin = false }: ProfileFormProps) 
                 {...register("address")}
                 placeholder="Masukkan alamat domisili Anda..."
                 rows={3}
-                className="flex w-full rounded-md border border-gray-200 bg-white/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all"
+                className="flex w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all"
               />
               {errors.address && <p className="text-xs text-red-500 mt-1">{errors.address.message}</p>}
             </div>
           </div>
         </CardContent>
 
-        <CardFooter className="bg-gray-50/30 border-t border-gray-100 p-6 flex justify-end gap-3">
+        <CardFooter className="bg-muted/30 border-t border-border p-6 flex justify-end gap-3">
           <Button 
             type="button" 
             variant="outline" 
             onClick={() => router.back()}
             disabled={loading}
-            className="hover:bg-white hover:text-primary transition-all"
+            className="hover:bg-accent hover:text-primary transition-all"
           >
             Batal
           </Button>
