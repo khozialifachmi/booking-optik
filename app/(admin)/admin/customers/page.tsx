@@ -45,8 +45,8 @@ export default async function AdminCustomersPage(props: {
   const bookings = await prisma.booking.findMany({
     where: targetDate ? (
         days === "0" 
-        ? { bookingDate: targetDate } // Tepat hari ini (atau tgl fallback demo)
-        : { bookingDate: { gte: targetDate } } // Dari X hari lalu sampai sekarang
+        ? { createdAt: { gte: targetDate } } // Hari ini
+        : { createdAt: { gte: targetDate } } // Dari X hari lalu sampai sekarang
     ) : {},
     select: {
       id: true,

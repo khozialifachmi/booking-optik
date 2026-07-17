@@ -29,26 +29,39 @@ export default async function AdminAccountsPage(props: {
   const todayStart = new Date(Date.UTC(jakartaTime.getUTCFullYear(), jakartaTime.getUTCMonth(), jakartaTime.getUTCDate(), 0, 0, 0, 0));
   const todayEnd   = new Date(Date.UTC(jakartaTime.getUTCFullYear(), jakartaTime.getUTCMonth(), jakartaTime.getUTCDate(), 23, 59, 59, 999));
 
-  // Selalu tampilkan: admin + user di tgl 15 Mei + user di hari ini (real-time)
-  // days filter hanya mempengaruhi apakah hari ini atau hanya tgl 15 yang ditampilkan
-  let whereClause: any;
-  if (days === "0") {
-    // Hari ini: tampilkan admin + user terdaftar hari ini
-    whereClause = {
-      OR: [
-        { role: "admin" },
-        { createdAt: { gte: todayStart, lte: todayEnd } }
-      ]
-    };
+  // Hitung target Date berdasarkan filter days
+  let targetDate: Date | null = new Date(todayStart);
+  
+  if (days === "all") {
+    targetDate = null;
+  } else if (days !== "0") {
+    const d = parseInt(days);
+    targetDate = new Date(todayStart.getTime() - d * 24 * 60 * 60 * 1000);
+  }
+
+  let whereClause: any = {};
+  
+  if (targetDate) {
+    if (days === "0") {
+      // Hari ini saja
+      whereClause = {
+        OR: [
+          { role: "admin" },
+          { createdAt: { gte: todayStart, lte: todayEnd } }
+        ]
+      };
+    } else {
+      // Dari X hari lalu sampai hari ini (inklusif)
+      whereClause = {
+        OR: [
+          { role: "admin" },
+          { createdAt: { gte: targetDate, lte: todayEnd } }
+        ]
+      };
+    }
   } else {
-    // Semua riwayat / filter lain: tampilkan admin + 20 data riil tgl 15 + hari ini
-    whereClause = {
-      OR: [
-        { role: "admin" },
-        { createdAt: { gte: may15, lte: new Date(may15.getTime() + 86400000 - 1) } },
-        { createdAt: { gte: todayStart, lte: todayEnd } }
-      ]
-    };
+    // Semua riwayat, tidak ada filter tanggal
+    whereClause = {};
   }
 
   // Terapkan filter pencarian jika ada
