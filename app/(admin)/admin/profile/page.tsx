@@ -62,11 +62,11 @@ export default async function AdminProfilePage() {
       
       <div className="bg-amber-500/10 rounded-3xl p-8 border border-amber-500/20 relative overflow-hidden">
           <div className="relative z-10 space-y-3">
-              <h3 className="text-lg font-bold text-amber-900">Catatan Keamanan Admin</h3>
-              <p className="text-amber-800/70 text-sm leading-relaxed">
+              <h3 className="text-lg font-bold text-amber-900 dark:text-amber-400">Catatan Keamanan Admin</h3>
+              <p className="text-amber-800/70 dark:text-amber-200/80 text-sm leading-relaxed">
                   Sebagai admin, identitas Anda akan tercatat dalam setiap log sistem (seperti konfirmasi pendaftaran atau perubahan rekam medis). Pastikan data profil Anda sudah sesuai untuk keperluan audit internal.
               </p>
-              <ul className="text-xs text-amber-800/60 space-y-1 pt-2">
+              <ul className="text-xs text-amber-800/60 dark:text-amber-200/70 space-y-1 pt-2">
                   <li className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                       Perubahan nama akan memengaruhi tampilan struk konfirmasi.
