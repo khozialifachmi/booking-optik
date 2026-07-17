@@ -23,7 +23,7 @@ export function BookingForm({ settings }: { settings: any }) {
   useEffect(() => {
     // Set jam pendaftaran seketika
     const now = new Date();
-    formatJakartaTime(setCurrentTime(now));
+    setCurrentTime(formatJakartaTime(now));
   }, []);
 
   const {
