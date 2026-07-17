@@ -14,6 +14,8 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { formatJakartaTime } from "@/lib/format-time";
+
 export const metadata: Metadata = {
   title: "Riwayat Pemeriksaan — EyeCheck",
   description: "Daftar riwayat pemeriksaan mata Anda",
@@ -146,7 +148,7 @@ export default async function BookingListPage() {
                                     </Badge>
                                 </div>
                                 <p className="text-sm text-muted-foreground">
-                                    Tgl: {new Date(booking.bookingDate).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })} | Jam Daftar: {new Date(booking.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB | Nomor: {booking.queueNumber ? `A-${booking.queueNumber.toString().padStart(2, "0")}` : "Verifikasi"}
+                                    Tgl: {new Date(booking.bookingDate).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })} | Jam Daftar: {new formatJakartaTime(Date(booking.createdAt))} WIB | Nomor: {booking.queueNumber ? `A-${booking.queueNumber.toString().padStart(2, "0")}` : "Verifikasi"}
                                 </p>
                             </div>
                         </div>
@@ -162,7 +164,7 @@ export default async function BookingListPage() {
                                   return currentSession?.user?.name || "Pelanggan";
                                 })()}
                                 serviceType={booking.serviceType}
-                                bookingTime={new Date(booking.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                                bookingTime={new formatJakartaTime(Date(booking.createdAt))}
                                 bookingDate={new Date(booking.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                               />
                            </div>
@@ -183,7 +185,7 @@ export default async function BookingListPage() {
                       Hasil Pemeriksaan Refraksionis
                     </p>
                     <div className="space-y-1">
-                      <p className="text-sm italic text-emerald-950 font-medium">"{record.notes}"</p>
+                      <p className="text-sm italic text-emerald-950 dark:text-emerald-100 font-medium">"{record.notes}"</p>
                     </div>
                   </div>
                 )}

@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { prisma } from "@/lib/prisma";
 import { SearchBar } from "@/components/admin/search-bar";
 import { DateFilter } from "@/components/admin/date-filter";
+
+import { formatJakartaTime } from "@/lib/format-time";
 export const metadata: Metadata = {
   title: "Riwayat Semua Booking — EyeCheck",
   description: "Daftar riwayat pemeriksaan pelanggan Optik Khayra",
@@ -70,6 +72,7 @@ export default async function AdminBookingsPage(props: {
       { bookingDate: 'desc' },
       { queueNumber: 'asc' }
     ],
+    take: 100
   });
 
   const getName = (b: any) => {
@@ -127,7 +130,7 @@ export default async function AdminBookingsPage(props: {
                       <td className="px-4 py-3 font-medium">{getName(item)}</td>
                       <td className="px-4 py-3 text-sm text-muted-foreground">{item.serviceType}</td>
                       <td className="px-4 py-3 text-sm text-muted-foreground">
-                        {item.estimatedServiceTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                        {formatJakartaTime(item.estimatedServiceTime)}
                       </td>
                       <td className="px-4 py-3">
                         <Badge className={config.className}>{config.label}</Badge>

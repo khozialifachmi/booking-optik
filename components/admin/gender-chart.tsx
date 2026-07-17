@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Users, Sparkles } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 
 interface GenderChartProps {
   maleCount: number;
@@ -9,6 +11,19 @@ interface GenderChartProps {
 }
 
 export function GenderChart({ maleCount, femaleCount }: GenderChartProps) {
+  const { theme } = useTheme();
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    if (theme === "dark") {
+      setIsDark(true);
+    } else if (theme === "light") {
+      setIsDark(false);
+    } else {
+      setIsDark(window.matchMedia("(prefers-color-scheme: dark)").matches);
+    }
+  }, [theme]);
+
   const total = maleCount + femaleCount;
   const malePercent = total > 0 ? Math.round((maleCount / total) * 100) : 50;
   const femalePercent = total > 0 ? Math.round((femaleCount / total) * 100) : 50;
@@ -19,9 +34,9 @@ export function GenderChart({ maleCount, femaleCount }: GenderChartProps) {
   const maleStrokeOffset = circumference - (malePercent / 100) * circumference;
 
   return (
-    <Card className="border-border/50 shadow-md bg-white overflow-hidden col-span-1 lg:col-span-1">
+    <Card className="border-border/50 shadow-md bg-white dark:bg-card overflow-hidden col-span-1 lg:col-span-1">
       <CardHeader className="pb-4">
-        <CardTitle className="text-md font-bold flex items-center gap-2 text-slate-800">
+        <CardTitle className="text-md font-bold flex items-center gap-2 text-slate-800 dark:text-slate-100">
           <Users className="h-4 w-4 text-primary animate-pulse" />
           Demografi Pendaftar
         </CardTitle>
@@ -31,7 +46,7 @@ export function GenderChart({ maleCount, femaleCount }: GenderChartProps) {
         {total === 0 ? (
           <div className="h-44 flex flex-col items-center justify-center text-center text-muted-foreground w-full">
             <Sparkles className="h-8 w-8 text-slate-300 mb-2" />
-            <p className="text-xs font-semibold text-slate-500">Belum ada pelanggan terdaftar</p>
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Belum ada pelanggan terdaftar</p>
             <p className="text-[10px] text-slate-400 mt-0.5">di periode filter saat ini</p>
           </div>
         ) : (
@@ -63,7 +78,7 @@ export function GenderChart({ maleCount, femaleCount }: GenderChartProps) {
               </svg>
               {/* Central Text */}
               <div className="absolute text-center">
-                <p className="text-2xl font-extrabold text-slate-800">{total}</p>
+                <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">{total}</p>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pelanggan</p>
               </div>
             </div>
@@ -71,26 +86,26 @@ export function GenderChart({ maleCount, femaleCount }: GenderChartProps) {
             {/* Labels and stats */}
             <div className="w-full space-y-3">
               {/* Male stats */}
-              <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-50/50 border border-emerald-100/50">
+              <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/10 border border-emerald-100/50 dark:border-emerald-500/20">
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-emerald-500 block" />
-                  <span className="text-xs font-bold text-slate-700">Laki-laki</span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Laki-laki</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-extrabold text-slate-800">{maleCount} orang</span>
-                  <span className="text-[10px] font-bold text-emerald-600 block">{malePercent}%</span>
+                  <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200">{maleCount} orang</span>
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 block">{malePercent}%</span>
                 </div>
               </div>
 
               {/* Female stats */}
-              <div className="flex items-center justify-between p-2 rounded-xl bg-rose-50/50 border border-rose-100/50">
+              <div className="flex items-center justify-between p-2 rounded-xl bg-rose-50/50 dark:bg-rose-950/10 border border-rose-100/50 dark:border-rose-500/20">
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-rose-400 block" />
-                  <span className="text-xs font-bold text-slate-700">Perempuan</span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Perempuan</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-extrabold text-slate-800">{femaleCount} orang</span>
-                  <span className="text-[10px] font-bold text-rose-500 block">{femalePercent}%</span>
+                  <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200">{femaleCount} orang</span>
+                  <span className="text-[10px] font-bold text-rose-500 dark:text-rose-400 block">{femalePercent}%</span>
                 </div>
               </div>
             </div>

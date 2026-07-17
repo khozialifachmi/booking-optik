@@ -3,13 +3,12 @@
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useTransition, useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 
-export function SearchBar({ placeholder = "Cari..." }: { placeholder?: string }) {
+function SearchBarInner({ placeholder = "Cari..." }: { placeholder?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
   const [query, setQuery] = useState(searchParams.get("q") || "");
 
   useEffect(() => {
@@ -21,9 +20,7 @@ export function SearchBar({ placeholder = "Cari..." }: { placeholder?: string })
         params.delete("q");
       }
       
-      startTransition(() => {
-        router.replace(`${pathname}?${params.toString()}`);
-      });
+      router.replace(`${pathname}?${params.toString()}`);
     }, 300); // debounce 300ms
 
     return () => clearTimeout(timer);
@@ -40,5 +37,13 @@ export function SearchBar({ placeholder = "Cari..." }: { placeholder?: string })
         onChange={(e) => setQuery(e.target.value)}
       />
     </div>
+  );
+}
+
+export function SearchBar(props: { placeholder?: string }) {
+  return (
+    <Suspense fallback={<div className="w-full sm:w-72 h-9 bg-muted/20 animate-pulse rounded-lg border" />}>
+      <SearchBarInner {...props} />
+    </Suspense>
   );
 }

@@ -1,11 +1,13 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/layout/logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, LogOut, User } from "lucide-react";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +34,13 @@ interface HeaderProps {
 export function Header({ userName = "Pengguna", navItems, logoutUrl = "/login", profileUrl }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Theme toggling is handled by the ThemeToggle component
 
   const initials = userName
     .split(" ")
@@ -45,13 +54,11 @@ export function Header({ userName = "Pengguna", navItems, logoutUrl = "/login", 
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
         {/* Mobile menu */}
         <div className="flex items-center gap-3 md:hidden">
-          <Sheet>
-            <SheetTrigger render={
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Menu</span>
-              </Button>
-            } />
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden" />}>
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Menu</span>
+            </SheetTrigger>
             <SheetContent side="left" className="w-72 p-0">
               <div className="flex h-16 items-center border-b px-6">
                 <Logo size="sm" />
@@ -62,6 +69,7 @@ export function Header({ userName = "Pengguna", navItems, logoutUrl = "/login", 
                     key={item.href}
                     href={item.href}
                     prefetch={true}
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                       pathname === item.href
                         ? "bg-primary/10 text-primary"
@@ -102,10 +110,12 @@ export function Header({ userName = "Pengguna", navItems, logoutUrl = "/login", 
           ))}
         </nav>
 
-        {/* User menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger render={
-            <Button variant="ghost" className="gap-2 px-2">
+        {/* User menu and Theme Toggle */}
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="ghost" className="gap-2 px-2" />}>
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
                   {initials}
@@ -114,29 +124,29 @@ export function Header({ userName = "Pengguna", navItems, logoutUrl = "/login", 
               <span className="hidden text-sm font-medium md:inline-block">
                 {userName}
               </span>
-            </Button>
-          } />
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem 
-              className="gap-2 cursor-pointer"
-              onClick={() => router.push(profileUrl || "#")}
-            >
-              <User className="h-4 w-4" />
-              Profil
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              className="gap-2 text-destructive focus:text-destructive cursor-pointer"
-              onClick={async () => {
-                await authClient.signOut();
-                router.push(logoutUrl);
-              }}
-            >
-              <LogOut className="h-4 w-4" />
-              Keluar
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem 
+                className="gap-2 cursor-pointer"
+                onClick={() => router.push(profileUrl || "#")}
+              >
+                <User className="h-4 w-4" />
+                Profil
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                className="gap-2 text-destructive focus:text-destructive cursor-pointer"
+                onClick={async () => {
+                  await authClient.signOut();
+                  router.push(logoutUrl);
+                }}
+              >
+                <LogOut className="h-4 w-4" />
+                Keluar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );

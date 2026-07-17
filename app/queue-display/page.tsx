@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Logo } from "@/components/layout/logo";
 import { Clock, Users, Monitor } from "lucide-react";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 
 import { getLiveQueueStatusAction } from "@/actions/booking-actions";
@@ -37,9 +38,12 @@ export default async function QueueDisplayPage() {
       <header className="border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 md:px-6">
           <Logo size="sm" />
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Monitor className="h-4 w-4" />
-            Tampilan Antrian Live
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <Monitor className="h-4 w-4" />
+              Tampilan Antrian Live
+            </div>
           </div>
         </div>
       </header>
@@ -54,7 +58,7 @@ export default async function QueueDisplayPage() {
           {/* Currently Calling, Serving & Completed */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Calling Card */}
-            <Card className="border-amber-300 bg-amber-50 shadow-xl shadow-amber-500/5 overflow-hidden">
+            <Card className="border-amber-300 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-950/10 shadow-xl shadow-amber-500/5 overflow-hidden">
               <div className="bg-amber-500 py-2 text-center text-xs font-bold text-white uppercase tracking-widest">
                 Antrian Dipanggil
               </div>
@@ -64,15 +68,15 @@ export default async function QueueDisplayPage() {
                     {queueData.currentCalling ? queueData.currentCalling.toString().padStart(2, "0") : "-"}
                   </span>
                 </div>
-                <p className="mt-4 text-lg font-bold text-amber-900 truncate px-2">
-                  {queueData.currentCallingName}
+                <p className="mt-4 text-lg font-bold text-amber-900 dark:text-amber-200 truncate px-2">
+                  {queueData.currentCallingName || "-"}
                 </p>
-                <p className="text-[10px] text-amber-600 mt-1">Silakan menuju ke Resepsionis</p>
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-1">Silakan menuju ke Resepsionis</p>
               </CardContent>
             </Card>
 
             {/* Serving Card */}
-            <Card className="border-primary/30 bg-primary/[0.03] shadow-xl shadow-primary/5 overflow-hidden">
+            <Card className="border-primary/30 dark:border-primary/20 bg-primary/[0.03] dark:bg-primary/5 shadow-xl shadow-primary/5 overflow-hidden">
               <div className="bg-primary py-2 text-center text-xs font-bold text-white uppercase tracking-widest">
                 Sedang Dilayani
               </div>
@@ -83,27 +87,27 @@ export default async function QueueDisplayPage() {
                   </span>
                 </div>
                 <p className="mt-4 text-lg font-bold truncate px-2">
-                  {queueData.currentServingName}
+                  {queueData.currentServingName || "-"}
                 </p>
                 <p className="text-[10px] text-muted-foreground mt-1">Sedang dalam pemeriksaan</p>
               </CardContent>
             </Card>
 
             {/* Recently Completed Card */}
-            <Card className="border-emerald-300 bg-emerald-50 shadow-xl shadow-emerald-500/5 overflow-hidden">
+            <Card className="border-emerald-300 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/10 shadow-xl shadow-emerald-500/5 overflow-hidden">
               <div className="bg-emerald-500 py-2 text-center text-xs font-bold text-white uppercase tracking-widest">
                 Antrian Selesai
               </div>
               <CardContent className="py-8 text-center">
-                <div className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-lg opacity-80">
+                <div className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-lg opacity-85">
                   <span className="text-4xl font-bold">
                     {queueData.completed.length > 0 ? queueData.completed[0].queueNumber.toString().padStart(2, "0") : "-"}
                   </span>
                 </div>
-                <p className="mt-4 text-lg font-bold text-emerald-900 truncate px-2">
+                <p className="mt-4 text-lg font-bold text-emerald-900 dark:text-emerald-200 truncate px-2">
                   {queueData.completed.length > 0 ? queueData.completed[0].name : "-"}
                 </p>
-                <p className="text-[10px] text-emerald-600 mt-1">Pemeriksaan telah selesai</p>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">Pemeriksaan telah selesai</p>
               </CardContent>
             </Card>
           </div>

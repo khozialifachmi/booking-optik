@@ -3,6 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { SearchBar } from "@/components/admin/search-bar";
 import { DateFilter } from "@/components/admin/date-filter";
+import { AddRegistrantDialog } from "@/components/admin/add-registrant-dialog";
+import { DeleteCustomerButton } from "@/components/admin/delete-customer-button";
+
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Data Pelanggan — EyeCheck",
   description: "Database seluruh pelanggan Optik Khayra",
@@ -52,7 +57,8 @@ export default async function AdminCustomersPage(props: {
         select: { name: true }
       }
     },
-    orderBy: { bookingDate: 'desc' }
+    orderBy: { bookingDate: 'desc' },
+    take: 100
   });
 
   // Extract unique customers from booking notes
@@ -163,9 +169,10 @@ export default async function AdminCustomersPage(props: {
       </div>
 
       <Card className="border-border/50 shadow-md">
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b bg-gray-50/50">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <CardTitle className="text-lg">Daftar Kontak</CardTitle>
           <div className="flex flex-col sm:flex-row items-center gap-2">
+            <AddRegistrantDialog />
             <DateFilter />
             <SearchBar placeholder="Cari nama pelanggan..." />
           </div>
@@ -181,6 +188,7 @@ export default async function AdminCustomersPage(props: {
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Keluhan & Kacamata</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Total Kunjungan</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Tgl Terakhir</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-16">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -196,6 +204,9 @@ export default async function AdminCustomersPage(props: {
                       <td className="px-4 py-3 text-sm font-bold text-primary whitespace-nowrap">{cust.totalVisits} kali</td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-muted-foreground">
                         {cust.lastVisit.toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-center">
+                        <DeleteCustomerButton name={cust.name} phone={cust.phone} />
                       </td>
                     </tr>
                 ))}

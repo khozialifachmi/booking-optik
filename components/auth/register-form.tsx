@@ -57,7 +57,12 @@ export function RegisterForm({
 
     if (result.error) {
         console.error("Full Error Object:", result);
-        console.error("Registration Error Details:", result.error);
+        console.error("Registration Error Details:", result.error.message || "Unknown error", result.error);
+        console.error("Registration Error Details Map:", {
+            status: result.error.status,
+            statusText: result.error.statusText,
+            message: result.error.message,
+        });
 
         Swal.fire({
           icon: "error",

@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useEffect, Suspense } from "react";
+import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useTransition } from "react";
 import { 
   Select, 
   SelectContent, 
@@ -9,7 +10,6 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
 
 const filterOptions = [
   { label: "Hari Ini", value: "0" },
@@ -23,15 +23,21 @@ const filterOptions = [
   { label: "Semua Riwayat", value: "all" },
 ];
 
-export function DateFilter({ defaultValue = "0" }: { defaultValue?: string }) {
+function DateFilterInner({ defaultValue = "0" }: { defaultValue?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(false);
 
   const currentValue = searchParams.get("days") || defaultValue;
 
+  useEffect(() => {
+    setIsLoading(false);
+  }, [currentValue]);
+
   const handleValueChange = (value: string) => {
+    if (value === currentValue) return;
+    setIsLoading(true);
     const params = new URLSearchParams(searchParams.toString());
     if (value === defaultValue) {
       params.delete("days");
@@ -39,21 +45,19 @@ export function DateFilter({ defaultValue = "0" }: { defaultValue?: string }) {
       params.set("days", value);
     }
     
-    startTransition(() => {
-      router.replace(`${pathname}?${params.toString()}`);
-    });
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   return (
     <div className="flex items-center gap-2">
       <span className="text-xs font-medium text-muted-foreground hidden sm:inline">Filter Waktu:</span>
-      <Select value={currentValue} onValueChange={handleValueChange} disabled={isPending}>
+      <Select value={currentValue} onValueChange={handleValueChange} disabled={isLoading}>
         <SelectTrigger className="w-[180px] h-9 bg-background/50 relative">
-          {isPending ? (
-            <div className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                <span className="text-xs">Memuat...</span>
-            </div>
+          {isLoading ? (
+            <span className="flex items-center gap-2 text-muted-foreground text-xs">
+              <Loader2 className="h-3 w-3 animate-spin text-primary" />
+              Memuat data...
+            </span>
           ) : (
             <SelectValue placeholder="Pilih Waktu" />
           )}
@@ -67,5 +71,13 @@ export function DateFilter({ defaultValue = "0" }: { defaultValue?: string }) {
         </SelectContent>
       </Select>
     </div>
+  );
+}
+
+export function DateFilter(props: { defaultValue?: string }) {
+  return (
+    <Suspense fallback={<div className="w-[180px] h-9 bg-muted/20 animate-pulse rounded-lg border" />}>
+      <DateFilterInner {...props} />
+    </Suspense>
   );
 }

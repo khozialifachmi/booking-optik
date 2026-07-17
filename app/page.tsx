@@ -10,12 +10,12 @@ import {
   Users,
   ArrowRight,
   CheckCircle2,
-  Sparkles,
   MapPin,
   Phone,
   Mail,
 } from "lucide-react";
 import { ImageModal } from "@/components/landing/ImageModal";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 export default function LandingPage() {
   return (
@@ -30,6 +30,7 @@ export default function LandingPage() {
             <Link href="#about" className="text-sm font-medium hover:text-primary transition-colors">Tentang Kami</Link>
           </nav>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link href="/login" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>
               Masuk
             </Link>
@@ -54,12 +55,6 @@ export default function LandingPage() {
 
         <div className="mx-auto max-w-6xl px-4 py-20 md:px-6 md:py-32">
           <div className="mx-auto max-w-3xl text-center">
-            {/* Pill badge */}
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Sistem Antrian Online FCFS
-            </div>
-
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
               Booking Pemeriksaan Mata{" "}
               <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
@@ -68,7 +63,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
-              Pesan antrian online, lihat estimasi waktu kedatangan, dan pantau
+              Daftar antrian online, lihat estimasi waktu kedatangan, dan pantau
               posisi antrian Anda secara real-time. Hemat waktu, tidak perlu
               menunggu lama di tempat.
             </p>
@@ -110,7 +105,7 @@ export default function LandingPage() {
                 icon: CalendarCheck,
                 title: "Booking Mudah",
                 description:
-                  "Pesan antrian kapan saja dari mana saja. Pilih tanggal dan layanan, langsung dapat nomor antrian.",
+                  "Daftar antrian kapan saja dari mana saja. Pilih tanggal dan layanan, langsung dapat nomor antrian.",
               },
               {
                 icon: Clock,
@@ -231,7 +226,7 @@ export default function LandingPage() {
                   <div>
                     <h4 className="font-semibold">Hubungi Kami</h4>
                     <p className="text-muted-foreground text-sm mt-1">
-                      (021) 1234-5678 / +62 812-3456-7890
+                      0819-3282-4055
                     </p>
                   </div>
                 </div>
@@ -243,7 +238,7 @@ export default function LandingPage() {
                   <div>
                     <h4 className="font-semibold">Email</h4>
                     <p className="text-muted-foreground text-sm mt-1">
-                      kontak@optikkhayra.com
+                      optikkhayra@gmail.com
                     </p>
                   </div>
                 </div>

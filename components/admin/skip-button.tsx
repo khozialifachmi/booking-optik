@@ -11,7 +11,7 @@ export function SkipButton({ bookingId }: { bookingId: string }) {
 
   const handleSkip = async () => {
     const confirm = await Swal.fire({
-      title: "Pasien Tidak Ada?",
+      title: "Pelanggan Tidak Ada?",
       text: "Antrian akan ditandai terlewat dan harus menunggu 5 antrian berikutnya untuk dipanggil lagi.",
       icon: "question",
       showCancelButton: true,

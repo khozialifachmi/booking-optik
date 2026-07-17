@@ -12,6 +12,8 @@ import { CalendarPlus, User, ClipboardList, Info, AlertCircle, Clock } from "luc
 import Swal from "sweetalert2";
 import { createBookingAction, getBookedTimeSlotsAction, getProspectiveTimeAction } from "@/actions/booking-actions";
 
+import { formatJakartaTime } from "@/lib/format-time";
+
 export function BookingForm({ settings }: { settings: any }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
@@ -21,7 +23,7 @@ export function BookingForm({ settings }: { settings: any }) {
   useEffect(() => {
     // Set jam pendaftaran seketika
     const now = new Date();
-    setCurrentTime(now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }));
+    formatJakartaTime(setCurrentTime(now));
   }, []);
 
   const {
@@ -31,7 +33,7 @@ export function BookingForm({ settings }: { settings: any }) {
     watch,
     setValue,
   } = useForm<BookingFormValues>({
-    resolver: zodResolver(bookingFormSchema),
+    resolver: zodResolver(bookingFormSchema) as any,
     mode: "onChange",
   });
 
@@ -176,7 +178,7 @@ export function BookingForm({ settings }: { settings: any }) {
 
             <div className="space-y-2">
               <Label htmlFor="usia">Usia (Tahun) <span className="text-destructive">*</span></Label>
-              <Input id="usia" type="number" min="1" placeholder="Usia pasien" {...register("usia")} aria-invalid={!!errors.usia} />
+              <Input id="usia" type="number" min="1" placeholder="Usia pelanggan" {...register("usia")} aria-invalid={!!errors.usia} />
               {errors.usia && <p className="text-xs text-destructive">{errors.usia.message}</p>}
             </div>
 
@@ -232,12 +234,7 @@ export function BookingForm({ settings }: { settings: any }) {
                   const todayStr = formatter.format(now);
                   
                   // Ambil jam & menit lokal untuk cek jam tutup
-                  const localTime = now.toLocaleTimeString('id-ID', { 
-                    timeZone: 'Asia/Jakarta', 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    hour12: false 
-                  });
+                  const localTime = formatJakartaTime(now);
                   const [currentH, currentM] = localTime.split(":").map(Number);
                   const [closeH, closeM] = (settings?.closeTime || "17:00").split(":").map(Number);
                   
@@ -270,7 +267,7 @@ export function BookingForm({ settings }: { settings: any }) {
                     <p className="font-bold text-primary">
                       {settings ? `${settings.openTime} - ${settings.closeTime} WIB` : "08:00 - 17:00 WIB"}
                     </p>
-                    <p className="text-[10px] text-muted-foreground">Pemeriksaan mengikuti urutan antrian masuk (FCFS).</p>
+                    <p className="text-[10px] text-muted-foreground">Pemeriksaan mengikuti urutan antrian masuk (Pemeriksaan Mata).</p>
                   </div>
                 </div>
               </div>
@@ -355,7 +352,7 @@ export function BookingForm({ settings }: { settings: any }) {
             </div>
             <div className="flex items-center justify-between border-b border-border/50 pb-4">
               <span className="text-sm font-medium text-muted-foreground">Status Pelayanan</span>
-              <span className="text-right font-medium text-primary">FCFS (First In First Served)</span>
+              <span className="text-right font-medium text-primary">Pemeriksaan Mata</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-muted-foreground">Biaya Pemeriksaan</span>

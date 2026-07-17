@@ -38,6 +38,8 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 
+import { formatJakartaTime } from "@/lib/format-time";
+
 export const metadata: Metadata = {
   title: "Admin Dashboard — EyeCheck",
   description: "Dashboard admin EyeCheck — kelola antri hari ini",
@@ -225,10 +227,14 @@ async function AdminDashboardContent({
           }
         }
       },
-      orderBy: [
+      orderBy: targetDate ? [
         { sortPriority: 'asc' },
         { createdAt: 'asc' }
-      ]
+      ] : [
+        { bookingDate: 'desc' },
+        { createdAt: 'desc' }
+      ],
+      take: 100
     });
   } catch (error) {
     console.error("Dashboard database fetch error:", error);
@@ -359,12 +365,12 @@ async function AdminDashboardContent({
                       <td className="px-4 py-3 font-medium">
                         <div className="flex flex-col gap-1">
                           <span>{getName(item)}</span>
-                          {item.userResponse === "present" && (
+                          {item.status !== "completed" && item.userResponse === "present" && (
                             <Badge className="w-fit bg-emerald-100 text-emerald-700 border-emerald-200 text-[10px] h-5 py-0 px-1.5 hover:bg-emerald-100">
                               <Check className="h-3 w-3 mr-1" /> Hadir
                             </Badge>
                           )}
-                          {item.userResponse === "absent" && (
+                          {item.status !== "completed" && item.userResponse === "absent" && (
                             <Badge className="w-fit bg-rose-100 text-rose-700 border-rose-200 text-[10px] h-5 py-0 px-1.5 hover:bg-rose-100">
                               <X className="h-3 w-3 mr-1" /> Tidak Hadir
                             </Badge>
@@ -375,7 +381,7 @@ async function AdminDashboardContent({
                       <td className="px-4 py-3 text-sm text-muted-foreground hidden md:table-cell">
                         <div className="flex flex-col gap-1">
                           <span className="font-medium text-foreground">
-                            {item.estimatedServiceTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
+                            {formatJakartaTime(item.estimatedServiceTime)} WIB
                           </span>
                           <form
                             className="flex items-center gap-1"
@@ -388,7 +394,7 @@ async function AdminDashboardContent({
                             <input
                               type="time"
                               name="newTime"
-                              defaultValue={item.estimatedServiceTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                              defaultValue={formatJakartaTime(item.estimatedServiceTime)}
                               className="text-[10px] bg-muted border-none rounded px-1 w-16 focus:ring-1 ring-primary text-xs"
                             />
                             <button type="submit" className="text-[10px] bg-primary text-white rounded px-1.5 py-0.5 hover:bg-primary/90">
@@ -398,7 +404,7 @@ async function AdminDashboardContent({
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm text-muted-foreground hidden lg:table-cell">
-                        {item.createdAt.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
+                        {formatJakartaTime(item.createdAt)} WIB
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-col gap-1">

@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 import Swal from "sweetalert2";
 import { authClient } from "@/lib/auth-client";
+import { checkEmailExistsAction } from "@/actions/reset-password-actions";
 
 interface LoginFormProps {
   redirectUrl?: string;
@@ -34,19 +35,42 @@ export function LoginForm({ redirectUrl = "/dashboard", hideRegisterLink = false
     },
   });
 
+  const handleLoginFailure = async (email: string, isPortalMismatch: boolean = false) => {
+    if (isPortalMismatch) {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal Masuk",
+          text: "email dan kata sandi salah",
+          confirmButtonColor: "#6366f1"
+        });
+        return;
+    }
+
+    const emailCheck = await checkEmailExistsAction(email.trim());
+    let errorMessage = "email dan kata sandi salah";
+    if (!emailCheck.success) {
+        errorMessage = "email salah";
+    } else {
+        errorMessage = "kata sandi salah";
+    }
+
+    Swal.fire({
+      icon: "error",
+      title: "Gagal Masuk",
+      text: errorMessage,
+      confirmButtonColor: "#6366f1"
+    });
+  };
+
   const onSubmit = async (data: LoginFormValues) => {
     const result = await authClient.signIn.email({
-        email: data.email,
+        email: data.email.trim(),
         password: data.password,
     });
 
     if (result.error) {
-        console.error("Login Error:", result.error);
-        Swal.fire({
-          icon: "error",
-          title: "Gagal Masuk",
-          text: result.error.message || "Email atau password salah.",
-        });
+        console.error("Login Error:", result.error.message || "Unknown error", result.error);
+        await handleLoginFailure(data.email, false);
         return;
     }
 
@@ -56,25 +80,13 @@ export function LoginForm({ redirectUrl = "/dashboard", hideRegisterLink = false
 
     if (isAdminPortal && userRole !== "admin") {
         await authClient.signOut(); // Paksa logout karena salah portal
-        Swal.fire({
-          icon: "error",
-          title: "Gagal Masuk",
-          text: "Invalid email or password",
-          confirmButtonText: "OK",
-          confirmButtonColor: "#6366f1"
-        });
+        await handleLoginFailure(data.email, true);
         return;
     }
 
     if (!isAdminPortal && userRole === "admin") {
         await authClient.signOut(); // Paksa logout
-        Swal.fire({
-          icon: "error",
-          title: "Gagal Masuk",
-          text: "Invalid email or password",
-          confirmButtonText: "OK",
-          confirmButtonColor: "#6366f1"
-        });
+        await handleLoginFailure(data.email, true);
         return;
     }
 

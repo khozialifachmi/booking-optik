@@ -6,6 +6,8 @@ import { bookingFormSchema, type BookingFormValues } from "@/lib/validations/boo
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
+import { formatJakartaTime } from "@/lib/format-time";
+
 export async function createBookingAction(data: BookingFormValues) {
   try {
     const parsedData = bookingFormSchema.parse(data);
@@ -33,9 +35,20 @@ export async function createBookingAction(data: BookingFormValues) {
         });
     }
 
+    // Dapatkan waktu saat ini dalam UTC sebenarnya dan waktu Jakarta
+    const nowTime = new Date();
+    const jakartaTimeStr = nowTime.toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+    const jakartaDate = new Date(jakartaTimeStr);
+    const today = new Date(jakartaDate.getFullYear(), jakartaDate.getMonth(), jakartaDate.getDate());
+
     // Konversi string ke Date Object
-    const targetDate = new Date(parsedData.tanggalBooking);
+    let targetDate = new Date(parsedData.tanggalBooking);
     targetDate.setHours(0, 0, 0, 0);
+
+    // 1. Validasi Tanggal Lampau
+    if (targetDate < today) {
+        throw new Error("Tidak dapat mendaftar untuk tanggal yang sudah lewat.");
+    }
 
     // Dapatkan konfigurasi antrian hari itu
     let settings = await prisma.queueSettings.findFirst({
@@ -57,29 +70,29 @@ export async function createBookingAction(data: BookingFormValues) {
         };
     }
 
-    // 1. Validasi Tanggal Lampau
-    const now = new Date();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (targetDate < today) {
-        throw new Error("Tidak dapat mendaftar untuk tanggal yang sudah lewat.");
-    }
+    let [openH, openM] = (settings.openTime || "08:00").split(":").map(Number);
+    let [closeH, closeM] = (settings.closeTime || "17:00").split(":").map(Number);
+    let closeTimeInMinutes = closeH * 60 + closeM;
 
     // 2. Validasi Jam Operasional (Hanya jika daftar untuk hari ini)
     if (targetDate.getTime() === today.getTime()) {
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
+        const currentHour = jakartaDate.getHours();
+        const currentMinute = jakartaDate.getMinutes();
         const currentTimeInMinutes = currentHour * 60 + currentMinute;
 
-        const [openH, openM] = (settings.openTime || "08:00").split(":").map(Number);
-        const [closeH, closeM] = (settings.closeTime || "17:00").split(":").map(Number);
-        
-        const closeTimeInMinutes = closeH * 60 + closeM;
-
-        // Hanya blokir jika SUDAH LEWAT jam tutup hari ini
+        // Jika pendaftaran lewat dari jam tutup, otomatis dialihkan ke antrian besok
         if (currentTimeInMinutes >= closeTimeInMinutes) {
-            throw new Error(`Optik Khayra sudah tutup. Pendaftaran untuk hari ini telah berakhir pukul ${settings.closeTime}. Silakan daftar untuk hari esok.`);
+            targetDate.setDate(targetDate.getDate() + 1);
+            
+            // Ambil ulang settings untuk besok jika diperlukan
+            const nextSettings = await prisma.queueSettings.findFirst({
+                where: { effectiveDate: { lte: targetDate } },
+                orderBy: { effectiveDate: 'desc' }
+            });
+            if (nextSettings) {
+                settings = nextSettings;
+                [openH, openM] = (settings.openTime || "08:00").split(":").map(Number);
+            }
         }
     }
 
@@ -87,13 +100,8 @@ export async function createBookingAction(data: BookingFormValues) {
     // Gunakan jam 12:00 UTC agar aman dari pergeseran hari di zona waktu mana pun
     const targetDateUTC = new Date(Date.UTC(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate(), 12, 0, 0));
 
-    // Dapatkan waktu Jakarta sekarang
-    const nowTime = new Date();
-    const jakartaTime = new Date(nowTime.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
-
-    // Ambil durasi rata-rata & jam buka dari settings
+    // Ambil durasi rata-rata
     const avgDuration = settings?.avgServiceDuration || 20;
-    const [h, m] = (settings?.openTime || "08:00").split(":").map(Number);
 
     // Cari booking terakhir untuk tanggal ini yang tidak dibatalkan
     const lastBooking = await prisma.booking.findFirst({
@@ -104,28 +112,29 @@ export async function createBookingAction(data: BookingFormValues) {
         orderBy: { estimatedServiceTime: 'desc' }
     });
 
-    const openTime = new Date(targetDateUTC);
-    openTime.setHours(h, m, 0, 0);
+    // Waktu buka klinik (dalam True UTC, di mana WIB = UTC+7)
+    const openTime = new Date(Date.UTC(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate(), openH - 7, openM, 0));
 
-    let baseTime: Date;
+    const isTargetToday = jakartaDate.getFullYear() === targetDate.getFullYear() &&
+                          jakartaDate.getMonth() === targetDate.getMonth() &&
+                          jakartaDate.getDate() === targetDate.getDate();
+
+    let bookingEstimatedTime: Date;
+
     if (lastBooking) {
-        baseTime = new Date(lastBooking.estimatedServiceTime);
+        if (isTargetToday && nowTime > lastBooking.estimatedServiceTime) {
+            bookingEstimatedTime = new Date(nowTime.getTime() + avgDuration * 60000);
+        } else {
+            bookingEstimatedTime = new Date(lastBooking.estimatedServiceTime.getTime() + avgDuration * 60000);
+        }
     } else {
-        baseTime = openTime;
-    }
-
-    const isToday = jakartaTime.getFullYear() === targetDate.getFullYear() &&
-                    jakartaTime.getMonth() === targetDate.getMonth() &&
-                    jakartaTime.getDate() === targetDate.getDate();
-
-    if (isToday) {
-        // Jika pendaftaran saat ini melewati estimasi terakhir, gunakan jam pendaftaran saat ini
-        if (jakartaTime > baseTime) {
-            baseTime = jakartaTime;
+        if (isTargetToday && nowTime > openTime) {
+            bookingEstimatedTime = new Date(nowTime.getTime() + avgDuration * 60000);
+        } else {
+            // Tepat jam operasional buka
+            bookingEstimatedTime = openTime;
         }
     }
-
-    const bookingEstimatedTime = new Date(baseTime.getTime() + avgDuration * 60000);
 
     // Update nomor telepon user di database jika masih kosong
     const existingUser = await prisma.user.findUnique({
@@ -334,7 +343,7 @@ export async function getBookedTimeSlotsAction(dateStr: string) {
 
         const fullSlots = bookings
             .filter(b => b._count >= slotLimit)
-            .map(b => b.estimatedServiceTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+            .map(b => formatJakartaTime(b.estimatedServiceTime));
         
         return fullSlots;
     } catch (error) {
@@ -373,7 +382,6 @@ export async function getLiveQueueStatusAction() {
             shiftedNow.getUTCDate(),
             0, 0, 0, 0
         ));
-
         const targetQueryDate = todayDateUTC;
 
         // Get bookings for today (Optimized: No heavy paymentProof)
@@ -430,7 +438,7 @@ export async function getLiveQueueStatusAction() {
                 currentCalling: calling?.queueNumber ?? 0,
                 currentCallingName: calling ? getName(calling) : "-",
                 currentName: serving ? getName(serving) : (calling ? getName(calling) : (completed.length > 0 ? "Semua Antrian Selesai" : "Belum Ada Antrian")),
-                currentEstimatedTime: serving ? serving.estimatedServiceTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : null,
+                currentEstimatedTime: serving ? formatJakartaTime(serving.estimatedServiceTime) : null,
                 totalToday: todayBookings.length,
                 waitingCount: waiting.length,
                 completedCount: completed.length,
@@ -438,14 +446,14 @@ export async function getLiveQueueStatusAction() {
                     id: b.id,
                     queueNumber: b.queueNumber ?? 0,
                     name: getName(b),
-                    estimatedTime: b.estimatedServiceTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                    estimatedTime: formatJakartaTime(b.estimatedServiceTime)
                 })),
                 missed: todayBookings.filter(b => b.status === "missed").map(b => ({
                     queueNumber: b.queueNumber ?? 0,
                     name: getName(b)
                 })),
                 upcoming: waiting.slice(0, 10).map((b, i) => {
-                    const timeStr = b.estimatedServiceTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+                    const timeStr = formatJakartaTime(b.estimatedServiceTime).replace('.', ':');
                     return {
                         id: b.id,
                         queueNumber: b.queueNumber ?? 0,
@@ -511,7 +519,7 @@ export async function getProspectiveTimeAction(dateString: string) {
         }
 
         const calcDate = new Date(baseTime.getTime() + avgDuration * 60000);
-        const timeString = calcDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+        const timeString = formatJakartaTime(calcDate).replace('.', ':');
         return { success: true, time: timeString };
     } catch (error: any) {
         return { success: false, error: error.message };

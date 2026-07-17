@@ -98,10 +98,13 @@ export async function callNextQueueAction() {
         const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
         const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
 
-        // Cari antrian waiting berikutnya (Urutkan berdasarkan nomor antrian - FCFS)
+        // Cari antrian waiting berikutnya (Urutkan berdasarkan prioritas antrian - FCFS)
         const nextWaiting = await prisma.booking.findFirst({
             where: { bookingDate: { gte: startOfDay, lte: endOfDay }, status: "waiting" },
-            orderBy: { queueNumber: 'asc' }
+            orderBy: [
+                { sortPriority: 'asc' },
+                { createdAt: 'asc' }
+            ]
         });
 
         if (!nextWaiting) {
@@ -293,7 +296,7 @@ export async function markAsMissedAction(bookingId: string) {
         await prisma.booking.update({
             where: { id: bookingId },
             data: { 
-                status: "waiting",
+                status: "missed",
                 sortPriority: newPriority,
                 skippedAtQueue: currentQueueMarker
             }
@@ -382,6 +385,55 @@ export async function updateEstimatedTimeAction(bookingId: string, newTime: stri
         return { success: true };
     } catch (error: any) {
         console.error("Error updating estimated time:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+export async function deleteBookingAction(bookingId: string) {
+    try {
+        await prisma.booking.delete({
+            where: { id: bookingId }
+        });
+        revalidatePath("/admin/bookings");
+        revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/fcfs");
+        revalidatePath("/admin/customers");
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function deleteCustomerAction(name: string, phone: string) {
+    try {
+        // Cari semua booking yang memiliki notes dengan nama dan nomor HP tersebut
+        const bookings = await prisma.booking.findMany({
+            select: { id: true, notes: true }
+        });
+
+        const targetBookingIds = bookings
+            .filter(b => {
+                if (!b.notes) return false;
+                const hasName = b.notes.includes(`Nama: ${name}`) || b.notes.includes(`Nama:  ${name}`);
+                const hasPhone = b.notes.includes(`HP: ${phone}`) || b.notes.includes(`HP:  ${phone}`);
+                return hasName && hasPhone;
+            })
+            .map(b => b.id);
+
+        if (targetBookingIds.length > 0) {
+            await prisma.booking.deleteMany({
+                where: {
+                    id: { in: targetBookingIds }
+                }
+            });
+        }
+
+        revalidatePath("/admin/customers");
+        revalidatePath("/admin/bookings");
+        revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/fcfs");
+        return { success: true };
+    } catch (error: any) {
         return { success: false, error: error.message };
     }
 }

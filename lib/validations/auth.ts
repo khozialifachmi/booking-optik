@@ -9,7 +9,7 @@ export const loginSchema = z.object({
     .email("Masukkan email yang valid"),
   password: z
     .string()
-    .min(8, "Password minimal 8 karakter"),
+    .min(6, "Password minimal 6 karakter"),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;

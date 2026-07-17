@@ -51,72 +51,69 @@ export function LiveQueueSection({ data }: LiveQueueSectionProps) {
 
       <div className="grid gap-4 md:grid-cols-3">
         {/* Antrian Dipanggil Card */}
-        <Card className="border-amber-500/50 bg-amber-500/5 shadow-md">
-          <CardHeader className="pb-2 text-center">
-            <CardTitle className="text-sm font-semibold text-amber-600 uppercase tracking-wider">
-              Antrian Dipanggil
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center py-4">
-             <div className={`inline-flex h-24 w-24 items-center justify-center rounded-2xl shadow-lg mb-3 animate-pulse ${data.currentCalling > 0 ? "bg-amber-500 text-white shadow-amber-500/20" : "bg-muted text-muted-foreground shadow-none"}`}>
+        <Card className="border-amber-300 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-950/10 shadow-lg shadow-amber-500/5 overflow-hidden flex flex-col">
+          <div className="bg-amber-500 py-2 text-center text-xs font-bold text-white uppercase tracking-widest">
+            Antrian Dipanggil
+          </div>
+          <CardContent className="flex-1 flex flex-col items-center justify-center py-6 text-center">
+             <div className={`inline-flex h-20 w-20 items-center justify-center rounded-2xl shadow-lg mb-4 ${data.currentCalling > 0 ? "bg-amber-500 text-white shadow-amber-500/20 animate-pulse" : "bg-muted text-muted-foreground shadow-none"}`}>
                <span className="text-4xl font-bold">
                  {data.currentCalling > 0 ? data.currentCalling.toString().padStart(2, "0") : "-"}
                </span>
              </div>
-             <p className={`text-xl font-bold text-center px-4 ${data.currentCalling === 0 ? "text-muted-foreground text-lg" : "text-amber-900"}`}>
-               {data.currentCallingName}
+             <p className={`text-lg font-bold text-center px-4 truncate w-full ${data.currentCalling === 0 ? "text-muted-foreground" : "text-amber-900 dark:text-amber-200"}`}>
+               {data.currentCallingName || "-"}
              </p>
-             <p className="text-[10px] text-amber-600 mt-1 font-medium text-center px-2">Silakan menuju ke Resepsionis</p>
+             <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-2 font-semibold">Silakan menuju ke Resepsionis</p>
           </CardContent>
         </Card>
 
         {/* Sedang Dilayani Card */}
-        <Card className="border-primary/50 bg-primary/5 shadow-md">
-          <CardHeader className="pb-2 text-center">
-            <CardTitle className="text-sm font-semibold text-primary uppercase tracking-wider">
-              Sedang Dilayani
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center py-4">
-             <div className={`inline-flex h-24 w-24 items-center justify-center rounded-2xl shadow-lg mb-3 ${data.currentServing > 0 ? "bg-primary text-primary-foreground shadow-primary/20" : "bg-muted text-muted-foreground shadow-none"}`}>
+        <Card className="border-primary/30 dark:border-primary/20 bg-primary/[0.03] dark:bg-primary/5 shadow-lg shadow-primary/5 overflow-hidden flex flex-col">
+          <div className="bg-primary py-2 text-center text-xs font-bold text-white uppercase tracking-widest">
+            Sedang Dilayani
+          </div>
+          <CardContent className="flex-1 flex flex-col items-center justify-center py-6 text-center">
+             <div className={`inline-flex h-20 w-20 items-center justify-center rounded-2xl shadow-lg mb-4 ${data.currentServing > 0 ? "bg-primary text-primary-foreground shadow-primary/20" : "bg-muted text-muted-foreground shadow-none"}`}>
                <span className="text-4xl font-bold">
                  {data.currentServing > 0 ? data.currentServing.toString().padStart(2, "0") : "-"}
                </span>
              </div>
-             <p className={`text-xl font-bold text-center px-4 ${data.currentServing === 0 ? "text-muted-foreground text-lg" : ""}`}>
-               {data.currentServingName}
+             <p className={`text-lg font-bold text-center px-4 truncate w-full ${data.currentServing === 0 ? "text-muted-foreground" : "text-foreground"}`}>
+               {data.currentServingName || "-"}
              </p>
-             <p className="text-[10px] text-muted-foreground mt-1 font-medium text-center px-2">Sedang dalam pemeriksaan</p>
+             <p className="text-[10px] text-muted-foreground mt-2 font-semibold">Sedang dalam pemeriksaan</p>
           </CardContent>
         </Card>
 
         {/* Antrian Terakhir Selesai Card */}
-        <Card className="border-emerald-500/30 bg-emerald-500/5 shadow-sm">
-          <CardHeader className="pb-2 text-center">
-            <CardTitle className="text-sm font-semibold text-emerald-600 uppercase tracking-wider">
-              Antrian Selesai (Terbaru)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center py-4">
+        <Card className="border-emerald-300 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/10 shadow-lg shadow-emerald-500/5 overflow-hidden flex flex-col">
+          <div className="bg-emerald-500 py-2 text-center text-xs font-bold text-white uppercase tracking-widest">
+            Antrian Selesai (Terbaru)
+          </div>
+          <CardContent className="flex-1 flex flex-col items-center justify-center py-6 text-center">
              {data.completed.length > 0 ? (
                <>
-                 <div className="inline-flex h-24 w-24 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/10 mb-3 opacity-80">
+                 <div className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 mb-4 opacity-90">
                    <span className="text-4xl font-bold">
                      {data.completed[0].queueNumber.toString().padStart(2, "0")}
                    </span>
                  </div>
-                 <p className="text-xl font-bold text-emerald-700 text-center truncate w-full px-4">
+                 <p className="text-lg font-bold text-emerald-900 dark:text-emerald-200 text-center truncate w-full px-4">
                    {data.completed[0].name}
                  </p>
-                 <p className="text-[10px] text-emerald-600 mt-1 font-medium text-center px-2">Pemeriksaan telah selesai</p>
+                 <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-2 font-semibold">Pemeriksaan telah selesai</p>
                </>
              ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                    <div className="h-24 w-24 flex items-center justify-center">
-                      <span className="text-4xl font-bold opacity-20">-</span>
-                    </div>
-                    <p className="text-sm">Belum ada yang selesai</p>
-                  </div>
+               <>
+                 <div className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-muted text-muted-foreground shadow-none mb-4">
+                   <span className="text-4xl font-bold">-</span>
+                 </div>
+                 <p className="text-lg font-medium text-muted-foreground text-center truncate w-full px-4">
+                   Belum ada yang selesai
+                 </p>
+                 <p className="text-[10px] text-muted-foreground mt-2 font-semibold">-</p>
+               </>
              )}
           </CardContent>
         </Card>

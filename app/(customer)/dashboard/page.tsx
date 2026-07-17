@@ -12,6 +12,7 @@ import {
   Eye,
   Printer,
   X,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -25,6 +26,10 @@ import { RefreshDashboard } from "@/components/admin/refresh-dashboard";
 import { QueueNotifier } from "@/components/booking/queue-notifier";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { formatJakartaTime } from "@/lib/format-time";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Dashboard — EyeCheck",
@@ -234,7 +239,9 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                 ? "border-green-500/50 bg-green-500/5" 
                 : nextBooking.status === "cancelled"
                   ? "border-destructive/30 bg-destructive/[0.02]"
-                  : "border-primary/20 bg-primary/[0.02]"
+                  : nextBooking.status === "missed"
+                    ? "border-rose-500/30 bg-rose-500/[0.02]"
+                    : "border-primary/20 bg-primary/[0.02]"
             }>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -243,7 +250,9 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                       ? "h-5 w-5 text-green-600" 
                       : nextBooking.status === "cancelled"
                         ? "h-5 w-5 text-destructive"
-                        : "h-5 w-5 text-primary"
+                        : nextBooking.status === "missed"
+                          ? "h-5 w-5 text-rose-600 animate-bounce"
+                          : "h-5 w-5 text-primary"
                   } />
                   {nextBooking.status === "serving" 
                     ? "Pemeriksaan Sedang Berlangsung" 
@@ -251,7 +260,9 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                       ? "Anda Sedang Dipanggil!" 
                       : nextBooking.status === "cancelled"
                         ? "Pendaftaran Gagal"
-                        : "Status Antrian"
+                        : nextBooking.status === "missed"
+                          ? "Antrian Anda Terlewat!"
+                          : "Status Antrian"
                   }
                 </CardTitle>
               </CardHeader>
@@ -264,7 +275,9 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                           ? "flex h-12 w-12 items-center justify-center rounded-xl bg-green-600 text-white font-bold text-lg animate-pulse" 
                           : nextBooking.status === "cancelled"
                             ? "flex h-12 w-12 items-center justify-center rounded-xl bg-destructive text-destructive-foreground font-bold text-lg"
-                            : "flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg"
+                            : nextBooking.status === "missed"
+                              ? "flex h-12 w-12 items-center justify-center rounded-xl bg-rose-600 text-white font-bold text-lg"
+                              : "flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg"
                       }>
                         {nextBooking.status === "cancelled" ? "X" : `Q-${nextBooking.queueNumber?.toString().padStart(3, "0") || "---"}`}
                       </div>
@@ -280,7 +293,9 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                                 ? "Segera menuju ruang periksa!" 
                                 : nextBooking.status === "cancelled"
                                   ? "Pendaftaran dibatalkan/ditolak oleh admin."
-                                  : `Daftar: ${nextBooking.createdAt.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB`
+                                  : nextBooking.status === "missed"
+                                    ? "Anda tidak di lokasi saat dipanggil."
+                                    : `Daftar: ${formatJakartaTime(nextBooking.createdAt)} WIB`
                           }
                         </p>
                       </div>
@@ -292,7 +307,9 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                         ? "border-green-500/30 text-green-600 uppercase bg-green-500/10" 
                         : nextBooking.status === "cancelled"
                           ? "border-destructive/30 text-destructive uppercase bg-destructive/10"
-                          : "border-primary/30 text-primary uppercase"
+                          : nextBooking.status === "missed"
+                            ? "border-rose-500/30 text-rose-600 uppercase bg-rose-500/10 animate-pulse"
+                            : "border-primary/30 text-primary uppercase"
                     }>
                       {nextBooking.status === "serving" 
                         ? "Sedang Dilayani" 
@@ -300,7 +317,9 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                           ? "Dipanggil" 
                           : nextBooking.status === "cancelled"
                             ? "Gagal"
-                            : "Menunggu"
+                            : nextBooking.status === "missed"
+                              ? "Terlewat"
+                              : "Menunggu"
                       }
                     </Badge>
                     {nextBooking.status === "unverified" && (
@@ -328,7 +347,7 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                             return userName || "Pelanggan";
                           })()}
                           serviceType={nextBooking.serviceType}
-                          bookingTime={nextBooking.createdAt.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                          bookingTime={formatJakartaTime(nextBooking.createdAt)}
                           bookingDate={nextBooking.createdAt.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                         />
                       </div>
@@ -338,6 +357,14 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                         <div className="flex items-center gap-2 text-destructive font-bold text-sm bg-destructive/10 p-3 rounded-lg border border-destructive/20">
                           <X className="h-4 w-4" />
                           Pendaftaran gagal
+                        </div>
+                      </div>
+                    )}
+                    {nextBooking.status === "missed" && (
+                      <div className="mt-4 pt-4 border-t border-dashed flex flex-col gap-3 w-full">
+                        <div className="flex items-center gap-2 text-rose-600 font-bold text-sm bg-rose-500/10 p-3 rounded-lg border border-rose-500/20">
+                          <AlertCircle className="h-4 w-4 shrink-0" />
+                          Antrian Anda Terlewat! Silakan lapor ke admin untuk dimasukkan kembali ke antrian.
                         </div>
                       </div>
                     )}
@@ -392,7 +419,7 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                           <div className="space-y-3">
                             <div className="p-3 rounded-lg bg-background border border-emerald-500/20">
                               <p className="text-[10px] font-bold text-emerald-600 uppercase mb-1">Catatan Refraksionis:</p>
-                              <p className="text-sm leading-relaxed font-medium italic text-emerald-950">"{record.notes || "Hasil sedang diproses..."}"</p>
+                              <p className="text-sm leading-relaxed font-medium italic text-emerald-950 dark:text-emerald-100">"{record.notes || "Hasil sedang diproses..."}"</p>
                             </div>
                           </div>
                         </CardContent>

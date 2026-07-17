@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BarChart3 } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 
 interface CashflowItem {
   id: string;
@@ -19,6 +20,18 @@ interface CashflowChartProps {
 
 export function CashflowChart({ items, days }: CashflowChartProps) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const { theme } = useTheme();
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    if (theme === "dark") {
+      setIsDark(true);
+    } else if (theme === "light") {
+      setIsDark(false);
+    } else {
+      setIsDark(window.matchMedia("(prefers-color-scheme: dark)").matches);
+    }
+  }, [theme]);
 
   const getJakartaParts = (d: Date) => {
     const shifted = new Date(d.getTime() + 7 * 60 * 60 * 1000);
@@ -150,25 +163,25 @@ export function CashflowChart({ items, days }: CashflowChartProps) {
   const barGap = 4;
 
   return (
-    <Card className="border-border/60 shadow-lg bg-white overflow-hidden col-span-1 lg:col-span-3 rounded-2xl">
-      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 space-y-4 sm:space-y-0 border-b border-slate-100 bg-slate-50/50">
+    <Card className="border-border/60 shadow-lg bg-white dark:bg-card overflow-hidden col-span-1 lg:col-span-3 rounded-2xl">
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 space-y-4 sm:space-y-0 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
         <div>
-          <CardTitle className="text-xl font-bold flex items-center gap-2.5 text-slate-800">
-            <div className="bg-indigo-100 p-2 rounded-xl">
-              <BarChart3 className="h-5 w-5 text-indigo-600" />
+          <CardTitle className="text-xl font-bold flex items-center gap-2.5 text-slate-800 dark:text-slate-100">
+            <div className="bg-indigo-100 dark:bg-indigo-950/50 p-2 rounded-xl">
+              <BarChart3 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             </div>
             Ringkasan Keuangan
           </CardTitle>
-          <CardDescription className="text-slate-500 mt-1 font-medium">{filterLabel}</CardDescription>
+          <CardDescription className="text-slate-500 dark:text-slate-400 mt-1 font-medium">{filterLabel}</CardDescription>
         </div>
-        <div className="flex items-center gap-5 text-sm font-semibold bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex items-center gap-5 text-sm font-semibold bg-white dark:bg-slate-900 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center gap-2">
             <span className="w-3.5 h-3.5 rounded-md bg-emerald-500 shadow-sm block" />
-            <span className="text-slate-600">Pemasukan</span>
+            <span className="text-slate-600 dark:text-slate-300">Pemasukan</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3.5 h-3.5 rounded-md bg-rose-500 shadow-sm block" />
-            <span className="text-slate-600">Pengeluaran</span>
+            <span className="text-slate-600 dark:text-slate-300">Pengeluaran</span>
           </div>
         </div>
       </CardHeader>
@@ -225,13 +238,13 @@ export function CashflowChart({ items, days }: CashflowChartProps) {
                   <g key={`grid-${idx}`}>
                     <line
                       x1={paddingLeft} y1={y} x2={width - paddingRight} y2={y}
-                      stroke={ratio === 0 ? "#cbd5e1" : "#f1f5f9"}
+                      stroke={isDark ? (ratio === 0 ? "#475569" : "#334155") : (ratio === 0 ? "#cbd5e1" : "#f1f5f9")}
                       strokeWidth={ratio === 0 ? "2" : "1"}
                     />
                     <text
                       x={paddingLeft - 16} y={y + 4}
                       textAnchor="end" fontSize="12" fontWeight="500"
-                      fill="#64748b"
+                      fill={isDark ? "#94a3b8" : "#64748b"}
                     >
                       {formatCurrencyCompact(maxVal * ratio)}
                     </text>
@@ -261,7 +274,7 @@ export function CashflowChart({ items, days }: CashflowChartProps) {
                       y={paddingTop - 10}
                       width={barGroupWidth}
                       height={chartHeight + 20}
-                      fill={isHovered ? "#f8fafc" : "transparent"}
+                      fill={isHovered ? (isDark ? "rgba(255, 255, 255, 0.03)" : "#f8fafc") : "transparent"}
                       rx="8"
                       className="transition-colors duration-200 cursor-pointer"
                       onMouseEnter={() => setHoveredIdx(idx)}
@@ -299,7 +312,7 @@ export function CashflowChart({ items, days }: CashflowChartProps) {
                       <rect
                         x={baseX - 4} y={paddingTop + chartHeight - 4}
                         width={8} height={4}
-                        fill="#e2e8f0" rx="2" pointerEvents="none"
+                        fill={isDark ? "#334155" : "#e2e8f0"} rx="2" pointerEvents="none"
                       />
                     )}
 
@@ -308,7 +321,7 @@ export function CashflowChart({ items, days }: CashflowChartProps) {
                       x={baseX} y={paddingTop + chartHeight + 28}
                       textAnchor="middle" fontSize="12"
                       fontWeight={isHovered ? "700" : "500"}
-                      fill={isHovered ? "#334155" : "#94a3b8"}
+                      fill={isHovered ? (isDark ? "#f1f5f9" : "#334155") : "#94a3b8"}
                       className="transition-colors duration-200 pointer-events-none"
                     >
                       {d.label}

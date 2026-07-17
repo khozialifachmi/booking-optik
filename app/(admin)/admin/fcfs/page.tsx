@@ -5,6 +5,12 @@ import { prisma } from "@/lib/prisma";
 import { DateFilter } from "@/components/admin/date-filter";
 import { PrintReportButton } from "@/components/admin/print-report-button";
 import { Clock, Users, Calculator, BookOpen, AlertCircle } from "lucide-react";
+import { AddRegistrantDialog } from "@/components/admin/add-registrant-dialog";
+import { DeleteBookingButton } from "@/components/admin/delete-booking-button";
+
+import { formatJakartaTime } from "@/lib/format-time";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Perhitungan FCFS — EyeCheck",
@@ -83,9 +89,13 @@ export default async function AdminFCFSPage(props: {
         select: { name: true }
       }
     },
-    orderBy: [
+    orderBy: targetDate ? [
       { queueNumber: 'asc' }
-    ]
+    ] : [
+      { bookingDate: 'desc' },
+      { queueNumber: 'asc' }
+    ],
+    take: 100
   });
 
   const getName = (b: any) => {
@@ -95,13 +105,13 @@ export default async function AdminFCFSPage(props: {
     return b.user?.name || "Pelanggan";
   };
 
-  // Lakukan perhitungan FCFS untuk tiap pasien
+  // Lakukan perhitungan FCFS untuk tiap pelanggan
   let totalWaitingTime = 0;
   let totalServiceTime = 0;
   let totalTurnaroundTime = 0;
 
-  let countWaitingCalc = 0; // Pasien yang sudah mulai dilayani / dipanggil / selesai
-  let countCompletedCalc = 0; // Pasien yang sudah selesai dilayani
+  let countWaitingCalc = 0; // Pelanggan yang sudah mulai dilayani / dipanggil / selesai
+  let countCompletedCalc = 0; // Pelanggan yang sudah selesai dilayani
 
   const calculatedBookings = bookings.map((item) => {
     const arrivalTime = item.estimatedServiceTime; // Jam janji temu (A_i)
@@ -153,15 +163,8 @@ export default async function AdminFCFSPage(props: {
   const avgServiceTime = countCompletedCalc > 0 ? (totalServiceTime / countCompletedCalc).toFixed(1) : "0.0";
   const avgTurnaroundTime = countCompletedCalc > 0 ? (totalTurnaroundTime / countCompletedCalc).toFixed(1) : "0.0";
 
-  // Fungsi pemformat jika rata-rata waktu lebih dari 60 menit dirubah menjadi jam
+  // Fungsi pemformat untuk selalu menggunakan menit
   const formatAverageTime = (avgStr: string) => {
-    const val = parseFloat(avgStr);
-    if (val > 60) {
-      return {
-        value: (val / 60).toFixed(1),
-        unit: "jam"
-      };
-    }
     return {
       value: avgStr,
       unit: "menit"
@@ -184,6 +187,7 @@ export default async function AdminFCFSPage(props: {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 print:hidden">
+          <AddRegistrantDialog />
           <DateFilter />
           <PrintReportButton />
         </div>
@@ -198,7 +202,7 @@ export default async function AdminFCFSPage(props: {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-amber-600">{formattedWaiting.value} <span className="text-sm font-normal text-muted-foreground">{formattedWaiting.unit}</span></div>
-            <p className="text-[10px] text-muted-foreground mt-1">Rata-rata pasien mengantri sebelum dilayani</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Rata-rata pelanggan mengantri sebelum dilayani</p>
           </CardContent>
         </Card>
 
@@ -226,19 +230,19 @@ export default async function AdminFCFSPage(props: {
 
         <Card className="border-border/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase">Total Pasien Terlayani</CardTitle>
+            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase">Total Pelanggan Terlayani</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground print:hidden" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{countCompletedCalc} <span className="text-sm font-normal text-muted-foreground">pasien</span></div>
-            <p className="text-[10px] text-muted-foreground mt-1">Jumlah pasien berstatus selesai dari total {bookings.length} antrean</p>
+            <div className="text-3xl font-bold">{countCompletedCalc} <span className="text-sm font-normal text-muted-foreground">pelanggan</span></div>
+            <p className="text-[10px] text-muted-foreground mt-1">Jumlah pelanggan berstatus selesai dari total {bookings.length} antrean</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabel Detail Perhitungan FCFS */}
       <Card className="border-border/50">
-        <CardHeader className="flex flex-row items-center justify-between border-b bg-gray-50/50">
+        <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="text-lg">{displayTitle}</CardTitle>
             <CardDescription className="text-xs print:hidden">Tabel analisis penjadwalan antrean FCFS per hari.</CardDescription>
@@ -257,6 +261,7 @@ export default async function AdminFCFSPage(props: {
                   <th className="px-4 py-3 text-center text-amber-700">Estimasi Waktu Tunggu</th>
                   <th className="px-4 py-3 text-center text-primary">Estimasi Waktu Pemeriksaan</th>
                   <th className="px-4 py-3 text-center print:hidden">Status</th>
+                  <th className="px-4 py-3 text-center print:hidden w-16">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y text-sm">
@@ -276,7 +281,7 @@ export default async function AdminFCFSPage(props: {
                       <td className="px-4 py-3 text-xs text-muted-foreground">{item.serviceType}</td>
                       {/* Jam Datang */}
                       <td className="px-4 py-3 text-center font-mono text-xs">
-                        {item.arrivalTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
+                        {formatJakartaTime(item.arrivalTime)} WIB
                       </td>
                       {/* Tanggal */}
                       <td className="px-4 py-3 text-center text-xs text-muted-foreground">
@@ -293,7 +298,7 @@ export default async function AdminFCFSPage(props: {
                             <span className="text-muted-foreground text-[10px]">Mulai: </span>
                             <span className="font-mono font-semibold">
                               {item.serviceStartTime ? (
-                                item.serviceStartTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB"
+                                formatJakartaTime(item.serviceStartTime) + " WIB"
                               ) : (
                                 "-"
                               )}
@@ -303,7 +308,7 @@ export default async function AdminFCFSPage(props: {
                             <span className="text-muted-foreground text-[10px]">Selesai: </span>
                             <span className="font-mono font-semibold">
                               {item.completionTime ? (
-                                item.completionTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB"
+                                formatJakartaTime(item.completionTime) + " WIB"
                               ) : (
                                 "-"
                               )}
@@ -314,6 +319,9 @@ export default async function AdminFCFSPage(props: {
                       {/* Status */}
                       <td className="px-4 py-3 text-center print:hidden">
                         <Badge className={config.className}>{config.label}</Badge>
+                      </td>
+                      <td className="px-4 py-3 text-center print:hidden whitespace-nowrap">
+                        <DeleteBookingButton bookingId={item.id} name={item.customerName} />
                       </td>
                     </tr>
                   );
@@ -343,7 +351,7 @@ export default async function AdminFCFSPage(props: {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="p-4 bg-muted/30 rounded-lg border border-border/50">
               <h4 className="font-semibold text-foreground mb-1">1. Waktu Tunggu (Wi)</h4>
-              <p className="text-xs mb-2">Selisih waktu ketika pasien dipanggil/dilayani dengan estimasi janji kedatangan.</p>
+              <p className="text-xs mb-2">Selisih waktu ketika pelanggan dipanggil/dilayani dengan estimasi janji kedatangan.</p>
               <div className="bg-background px-3 py-1.5 rounded font-mono text-xs text-amber-600 border w-fit">
                 Wi = Max(0, S_start - A)
               </div>
@@ -357,7 +365,7 @@ export default async function AdminFCFSPage(props: {
             </div>
             <div className="p-4 bg-muted/30 rounded-lg border border-border/50">
               <h4 className="font-semibold text-foreground mb-1">3. Waktu Keseluruhan (TAi)</h4>
-              <p className="text-xs mb-2">Total waktu yang dihabiskan pasien di sistem, dari estimasi kedatangan hingga selesai.</p>
+              <p className="text-xs mb-2">Total waktu yang dihabiskan pelanggan di sistem, dari estimasi kedatangan hingga selesai.</p>
               <div className="bg-background px-3 py-1.5 rounded font-mono text-xs text-emerald-600 border w-fit">
                 TA_i = C - A = Wi + T_service
               </div>
