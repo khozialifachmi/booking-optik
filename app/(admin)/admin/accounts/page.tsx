@@ -46,18 +46,12 @@ export default async function AdminAccountsPage(props: {
     if (days === "0") {
       // Hari ini saja
       whereClause = {
-        OR: [
-          { role: "admin" },
-          { createdAt: { gte: todayStart, lte: todayEnd } }
-        ]
+        createdAt: { gte: todayStart, lte: todayEnd }
       };
     } else {
       // Dari X hari lalu sampai hari ini (inklusif)
       whereClause = {
-        OR: [
-          { role: "admin" },
-          { createdAt: { gte: targetDate, lte: todayEnd } }
-        ]
+        createdAt: { gte: targetDate, lte: todayEnd }
       };
     }
   } else {

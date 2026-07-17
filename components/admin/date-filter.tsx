@@ -14,12 +14,8 @@ import {
 const filterOptions = [
   { label: "Hari Ini", value: "0" },
   { label: "1 Hari Lalu", value: "1" },
-  { label: "3 Hari Lalu", value: "3" },
   { label: "7 Hari Lalu (Seminggu)", value: "7" },
-  { label: "14 Hari Lalu (2 Minggu)", value: "14" },
   { label: "1 Bulan Lalu", value: "30" },
-  { label: "2 Bulan Lalu", value: "60" },
-  { label: "3 Bulan Lalu", value: "90" },
   { label: "Semua Riwayat", value: "all" },
 ];
 
