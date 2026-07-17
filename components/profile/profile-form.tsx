@@ -229,7 +229,7 @@ export function ProfileForm({ initialData, isAdmin = false }: ProfileFormProps) 
                   <CheckCircle2 className="h-3 w-3 text-green-500" /> Email sudah pernah diganti dan tidak dapat diubah lagi.
                 </p>
               ) : (
-                <p className="text-[10px] text-amber-600 font-medium mt-1 flex items-center gap-1">
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium mt-1 flex items-center gap-1">
                   <AlertCircle className="h-3 w-3" /> Peringatan: Email hanya dapat diganti 1 kali saja.
                 </p>
               )}

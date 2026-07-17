@@ -31,6 +31,7 @@ export default async function CustomerLayout({
     <div className="flex min-h-svh flex-col">
       <Header
         userName={userName}
+        userImage={session?.user?.image}
         navItems={CUSTOMER_NAV as unknown as { label: string; href: string; icon: string }[]}
         profileUrl="/dashboard/profile"
       />

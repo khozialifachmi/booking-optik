@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { authClient } from "@/lib/auth-client";
 
 interface NavItem {
@@ -29,9 +29,10 @@ interface HeaderProps {
   navItems: NavItem[];
   logoutUrl?: string;
   profileUrl?: string;
+  userImage?: string | null;
 }
 
-export function Header({ userName = "Pengguna", navItems, logoutUrl = "/login", profileUrl }: HeaderProps) {
+export function Header({ userName = "Pengguna", navItems, logoutUrl = "/login", profileUrl, userImage }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -117,6 +118,7 @@ export function Header({ userName = "Pengguna", navItems, logoutUrl = "/login", 
           <DropdownMenu>
             <DropdownMenuTrigger render={<Button variant="ghost" className="gap-2 px-2" />}>
               <Avatar className="h-8 w-8">
+                <AvatarImage src={userImage || ""} alt={userName} />
                 <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
                   {initials}
                 </AvatarFallback>

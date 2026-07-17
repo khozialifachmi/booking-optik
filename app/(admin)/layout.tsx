@@ -37,6 +37,7 @@ export default async function AdminLayout({
     <div className="flex min-h-svh flex-col">
       <Header
         userName={userName}
+        userImage={session?.user?.image}
         navItems={ADMIN_NAV as unknown as { label: string; href: string; icon: string }[]}
         logoutUrl="/admin-login"
         profileUrl="/admin/profile"
