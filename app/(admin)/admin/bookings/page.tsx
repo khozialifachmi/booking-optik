@@ -94,7 +94,7 @@ export default async function AdminBookingsPage(props: {
       </div>
 
       <Card className="border-border/50 shadow-md">
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b bg-gray-50/50">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <CardTitle className="text-lg">Daftar Lengkap Antrian</CardTitle>
           <div className="flex flex-col sm:flex-row items-center gap-2">
             <DateFilter />
