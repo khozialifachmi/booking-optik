@@ -190,9 +190,9 @@ export function BookingForm({ settings }: { settings: any }) {
                 className={baseInputClass}
                 defaultValue=""
               >
-                <option value="" disabled>Pilih Jenis Kelamin</option>
-                <option value="Laki-laki">Laki-laki</option>
-                <option value="Perempuan">Perempuan</option>
+                <option value="" disabled className="bg-background text-foreground">Pilih Jenis Kelamin</option>
+                <option value="Laki-laki" className="bg-background text-foreground">Laki-laki</option>
+                <option value="Perempuan" className="bg-background text-foreground">Perempuan</option>
               </select>
               {errors.jenisKelamin && <p className="text-xs text-destructive">{errors.jenisKelamin.message}</p>}
             </div>
@@ -288,9 +288,9 @@ export function BookingForm({ settings }: { settings: any }) {
               <div className="space-y-2">
                 <Label htmlFor="pernahPeriksa">Apakah pernah periksa sebelumnya? <span className="text-destructive">*</span></Label>
                 <select id="pernahPeriksa" {...register("pernahPeriksa")} className={baseInputClass} defaultValue="">
-                  <option value="" disabled>Pilih Status</option>
-                  <option value="Sudah">Sudah pernah</option>
-                  <option value="Belum">Belum sama sekali</option>
+                  <option value="" disabled className="bg-background text-foreground">Pilih Status</option>
+                  <option value="Sudah" className="bg-background text-foreground">Sudah pernah</option>
+                  <option value="Belum" className="bg-background text-foreground">Belum sama sekali</option>
                 </select>
                 {errors.pernahPeriksa && <p className="text-xs text-destructive">{errors.pernahPeriksa.message}</p>}
               </div>
