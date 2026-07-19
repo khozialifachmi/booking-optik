@@ -46,8 +46,8 @@ export default async function AdminProfilePage() {
                     <ShieldCheck className="h-5 w-5 text-primary" />
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">Administrator Panel</span>
                 </div>
-                <h1 className="text-3xl font-black text-gray-900 tracking-tight">Profil Pengelola</h1>
-                <p className="text-gray-500">Identitas resmi Anda sebagai pengelola sistem Optik Khayra.</p>
+                <h1 className="text-3xl font-black text-foreground tracking-tight">Profil Admin</h1>
+                <p className="text-muted-foreground">Identitas resmi Anda sebagai pengelola sistem Optik Khayra.</p>
             </div>
             <div className="hidden md:block">
                 <div className="bg-primary/10 px-4 py-2 rounded-2xl border border-primary/20">

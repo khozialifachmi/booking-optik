@@ -11,15 +11,21 @@ export async function updateQueueSettingsAction(data: {
 }) {
     // Di aplikasi nyata, periksa if user isAdmin di sini.
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const now = new Date();
+        const shiftedNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+        const todayDateUTC = new Date(Date.UTC(
+            shiftedNow.getUTCFullYear(),
+            shiftedNow.getUTCMonth(),
+            shiftedNow.getUTCDate(),
+            0, 0, 0, 0
+        ));
 
         // Cari atau buat setting terbaru
         const currentSetting = await prisma.queueSettings.findFirst({
             orderBy: { effectiveDate: 'desc' }
         });
 
-        if (currentSetting && currentSetting.effectiveDate.getTime() === today.getTime()) {
+        if (currentSetting && currentSetting.effectiveDate.getTime() === todayDateUTC.getTime()) {
             // Update pengaturan hari ini
             await prisma.queueSettings.update({
                 where: { id: currentSetting.id },
@@ -38,7 +44,7 @@ export async function updateQueueSettingsAction(data: {
                     openTime: data.openTime,
                     closeTime: data.closeTime,
                     maxBookingsPerDay: data.maxBookingsPerDay,
-                    effectiveDate: today
+                    effectiveDate: todayDateUTC
                 }
             });
         }
@@ -92,15 +98,18 @@ export async function updateBookingStatusAction(bookingId: string, newStatus: st
 
 export async function callNextQueueAction() {
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
-        const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+        const now = new Date();
+        const shiftedNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+        const targetDateUTC = new Date(Date.UTC(
+            shiftedNow.getUTCFullYear(),
+            shiftedNow.getUTCMonth(),
+            shiftedNow.getUTCDate(),
+            0, 0, 0, 0
+        ));
 
         // Cari antrian waiting berikutnya (Urutkan berdasarkan prioritas antrian - FCFS)
         const nextWaiting = await prisma.booking.findFirst({
-            where: { bookingDate: { gte: startOfDay, lte: endOfDay }, status: "waiting" },
+            where: { bookingDate: targetDateUTC, status: "waiting" },
             orderBy: [
                 { sortPriority: 'asc' },
                 { createdAt: 'asc' }
@@ -254,15 +263,18 @@ export async function recallBookingAction(queueNumber: number) {
 
 export async function markAsMissedAction(bookingId: string) {
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
-        const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+        const now = new Date();
+        const shiftedNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+        const targetDateUTC = new Date(Date.UTC(
+            shiftedNow.getUTCFullYear(),
+            shiftedNow.getUTCMonth(),
+            shiftedNow.getUTCDate(),
+            0, 0, 0, 0
+        ));
 
         // Cari antrian terakhir yang selesai/sedang dilayani untuk patokan
         const lastServed = await prisma.booking.findFirst({
-            where: { bookingDate: { gte: startOfDay, lte: endOfDay }, status: { in: ["serving", "completed"] } },
+            where: { bookingDate: targetDateUTC, status: { in: ["serving", "completed"] } },
             orderBy: { queueNumber: 'desc' }
         });
 
@@ -271,7 +283,7 @@ export async function markAsMissedAction(bookingId: string) {
         // Cari 5 antrian waiting berikutnya (yang punya prioritas lebih tinggi dari sekarang)
         const currentWaiting = await prisma.booking.findMany({
             where: { 
-                bookingDate: { gte: startOfDay, lte: endOfDay }, 
+                bookingDate: targetDateUTC, 
                 status: "waiting",
                 id: { not: bookingId }
             },

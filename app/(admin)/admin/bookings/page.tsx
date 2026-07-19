@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { prisma } from "@/lib/prisma";
 import { SearchBar } from "@/components/admin/search-bar";
 import { DateFilter } from "@/components/admin/date-filter";
+import { DeleteBookingButton } from "@/components/admin/delete-booking-button";
 
 import { formatJakartaTime } from "@/lib/format-time";
 export const metadata: Metadata = {
@@ -112,6 +113,7 @@ export default async function AdminBookingsPage(props: {
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Layanan</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Jam</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-16">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -134,6 +136,9 @@ export default async function AdminBookingsPage(props: {
                       </td>
                       <td className="px-4 py-3">
                         <Badge className={config.className}>{config.label}</Badge>
+                      </td>
+                      <td className="px-4 py-3 text-center whitespace-nowrap">
+                        <DeleteBookingButton bookingId={item.id} name={getName(item)} />
                       </td>
                     </tr>
                   );

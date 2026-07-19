@@ -36,6 +36,7 @@ export function Header({ userName = "Pengguna", navItems, logoutUrl = "/login", 
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -128,23 +129,26 @@ export function Header({ userName = "Pengguna", navItems, logoutUrl = "/login", 
               </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem 
-                className="gap-2 cursor-pointer"
-                onClick={() => router.push(profileUrl || "#")}
-              >
-                <User className="h-4 w-4" />
-                Profil
-              </DropdownMenuItem>
+              <Link href={profileUrl || "#"} prefetch={true} className="w-full cursor-pointer outline-none">
+                <DropdownMenuItem className="gap-2 cursor-pointer">
+                  <User className="h-4 w-4" />
+                  Profil
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
                 className="gap-2 text-destructive focus:text-destructive cursor-pointer"
-                onClick={async () => {
+                disabled={isLoggingOut}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  setIsLoggingOut(true);
                   await authClient.signOut();
                   router.push(logoutUrl);
+                  router.refresh();
                 }}
               >
-                <LogOut className="h-4 w-4" />
-                Keluar
+                <LogOut className={`h-4 w-4 ${isLoggingOut ? "animate-pulse" : ""}`} />
+                {isLoggingOut ? "Keluar..." : "Keluar"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
