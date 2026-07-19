@@ -42,8 +42,8 @@ export default async function CustomerProfilePage() {
         </Link>
         <div className="flex items-end justify-between">
             <div>
-                <h1 className="text-3xl font-black text-gray-900 tracking-tight">Pengaturan Profil</h1>
-                <p className="text-gray-500 mt-1">Sesuaikan informasi diri Anda agar proses booking lebih cepat.</p>
+                <h1 className="text-3xl font-black text-foreground tracking-tight">Profil Anda</h1>
+                <p className="text-muted-foreground mt-1">Sesuaikan informasi diri Anda agar proses booking lebih cepat.</p>
             </div>
             <div className="hidden md:block">
                 <div className="bg-primary/10 px-4 py-2 rounded-2xl border border-primary/20">
