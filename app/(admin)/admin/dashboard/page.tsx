@@ -161,7 +161,8 @@ export default async function AdminDashboard(props: {
     weekday: "long",
     year: "numeric",
     month: "long",
-    day: "numeric"
+    day: "numeric",
+    timeZone: 'Asia/Jakarta'
   }) : "Semua Waktu";
 
   return (
@@ -276,7 +277,7 @@ async function AdminDashboardContent({
 
   return (
     <div className="space-y-6">
-      <RefreshDashboard interval={30000} />
+      <RefreshDashboard interval={3000} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Card Total Antrian */}

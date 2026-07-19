@@ -69,7 +69,7 @@ export default function LandingPage() {
             </p>
 
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link href="/register" className={cn(buttonVariants({ variant: "default", size: "lg" }), "gap-2 text-base w-full sm:w-auto")}>
+              <Link href="/booking/new" className={cn(buttonVariants({ variant: "default", size: "lg" }), "gap-2 text-base w-full sm:w-auto")}>
                 Daftar Pemeriksaan
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -288,7 +288,7 @@ export default function LandingPage() {
             Daftar sekarang dan nikmati kemudahan booking online.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <Link href="/register" className={cn(buttonVariants({ variant: "default", size: "lg" }), "gap-2 text-base w-full sm:w-auto")}>
+            <Link href="/booking/new" className={cn(buttonVariants({ variant: "default", size: "lg" }), "gap-2 text-base w-full sm:w-auto")}>
               <CheckCircle2 className="h-4 w-4" />
               Booking Sekarang
             </Link>

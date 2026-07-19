@@ -120,7 +120,7 @@ export default async function AdminBookingsPage(props: {
                   return (
                     <tr key={item.id} className="transition-colors hover:bg-muted/30">
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-muted-foreground">
-                        {item.bookingDate.toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}
+                        {item.bookingDate.toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' })}
                       </td>
                       <td className="px-4 py-3">
                         <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary">

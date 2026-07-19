@@ -1,4 +1,5 @@
 import { Logo } from "@/components/layout/logo";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 export default function AuthLayout({
   children,
@@ -6,7 +7,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 px-4 py-8">
+    <div className="flex min-h-svh flex-col items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 px-4 py-8 relative">
       {/* Decorative elements */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
@@ -15,9 +16,12 @@ export default function AuthLayout({
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-md space-y-6">
-        {/* Logo */}
-        <div className="flex justify-center">
+        {/* Header (Logo & Theme Toggle) */}
+        <div className="flex items-center justify-between px-2">
           <Logo size="lg" />
+          <div className="bg-background/50 backdrop-blur-sm rounded-lg border border-border/50">
+            <ThemeToggle />
+          </div>
         </div>
 
         {children}

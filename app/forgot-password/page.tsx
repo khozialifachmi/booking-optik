@@ -10,6 +10,7 @@ import Link from "next/link";
 import { checkEmailExistsAction, directResetPasswordAction } from "@/actions/reset-password-actions";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -78,15 +79,20 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-svh flex items-center justify-center bg-gray-50/50 p-4">
-      <Card className="w-full max-w-md border-none shadow-2xl bg-white/80 backdrop-blur-md overflow-hidden animate-in fade-in zoom-in duration-500">
+    <div className="min-h-svh flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4 relative">
+      <Card className="w-full max-w-md border border-border/50 shadow-2xl bg-card/80 backdrop-blur-md overflow-hidden animate-in fade-in zoom-in duration-500 relative z-10">
         <div className="h-2 bg-primary w-full" />
         
         <CardHeader className="space-y-1 pt-8">
-          <Link href="/login" className="flex items-center text-xs text-muted-foreground hover:text-primary transition-colors mb-4 w-fit">
-            <ChevronLeft className="h-3 w-3 mr-1" /> Kembali ke Login
-          </Link>
-          <CardTitle className="text-2xl font-black tracking-tight text-gray-900">
+          <div className="flex items-center justify-between w-full mb-4">
+            <Link href="/login" className="flex items-center text-xs text-muted-foreground hover:text-primary transition-colors">
+              <ChevronLeft className="h-3 w-3 mr-1" /> Kembali ke Login
+            </Link>
+            <div className="bg-background/50 backdrop-blur-sm rounded-lg border border-border/50">
+              <ThemeToggle />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-black tracking-tight text-foreground">
             {step === 1 ? "Lupa Password?" : "Atur Password Baru"}
           </CardTitle>
           <CardDescription>
@@ -100,7 +106,7 @@ export default function ForgotPasswordPage() {
           {step === 1 ? (
             <form onSubmit={handleCheckEmail} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold flex items-center gap-2 text-gray-700">
+                <Label htmlFor="email" className="text-sm font-semibold flex items-center gap-2 text-foreground">
                   <Mail className="h-4 w-4 text-primary/60" /> Alamat Email
                 </Label>
                 <Input
@@ -109,7 +115,7 @@ export default function ForgotPasswordPage() {
                   placeholder="nama@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-white/50 border-gray-200 focus:border-primary focus:ring-primary/20 transition-all h-11"
+                  className="bg-background/50 border-input text-foreground focus:border-primary focus:ring-primary/20 transition-all h-11"
                   required
                 />
               </div>
@@ -132,7 +138,7 @@ export default function ForgotPasswordPage() {
           ) : (
             <form onSubmit={handleResetPassword} className="space-y-4 animate-in slide-in-from-right duration-300">
               <div className="space-y-2">
-                <Label htmlFor="newPass" className="text-sm font-semibold flex items-center gap-2 text-gray-700">
+                <Label htmlFor="newPass" className="text-sm font-semibold flex items-center gap-2 text-foreground">
                   <KeyRound className="h-4 w-4 text-primary/60" /> Password Baru
                 </Label>
                 <div className="relative">
@@ -142,13 +148,13 @@ export default function ForgotPasswordPage() {
                     placeholder="••••••••"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="bg-white/50 border-gray-200 focus:border-primary focus:ring-primary/20 transition-all h-11 pr-10"
+                    className="bg-background/50 border-input text-foreground focus:border-primary focus:ring-primary/20 transition-all h-11 pr-10"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -156,7 +162,7 @@ export default function ForgotPasswordPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPass" className="text-sm font-semibold flex items-center gap-2 text-gray-700">
+                <Label htmlFor="confirmPass" className="text-sm font-semibold flex items-center gap-2 text-foreground">
                   <Lock className="h-4 w-4 text-primary/60" /> Konfirmasi Password
                 </Label>
                 <div className="relative">
@@ -166,13 +172,13 @@ export default function ForgotPasswordPage() {
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="bg-white/50 border-gray-200 focus:border-primary focus:ring-primary/20 transition-all h-11 pr-10"
+                    className="bg-background/50 border-input text-foreground focus:border-primary focus:ring-primary/20 transition-all h-11 pr-10"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
                   >
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -194,7 +200,7 @@ export default function ForgotPasswordPage() {
           )}
         </CardContent>
 
-        <CardFooter className="bg-gray-50/50 border-t border-gray-100 py-6">
+        <CardFooter className="bg-muted/50 border-t border-border/50 py-6">
           <p className="text-center text-xs text-muted-foreground w-full">
             Fitur pemulihan akun instan Optik Khayra
           </p>

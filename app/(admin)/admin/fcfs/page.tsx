@@ -7,6 +7,7 @@ import { PrintReportButton } from "@/components/admin/print-report-button";
 import { Clock, Users, Calculator, BookOpen, AlertCircle } from "lucide-react";
 import { AddRegistrantDialog } from "@/components/admin/add-registrant-dialog";
 import { DeleteBookingButton } from "@/components/admin/delete-booking-button";
+import { RefreshDashboard } from "@/components/admin/refresh-dashboard";
 
 import { formatJakartaTime } from "@/lib/format-time";
 
@@ -63,7 +64,8 @@ export default async function AdminFCFSPage(props: {
     weekday: "long",
     year: "numeric",
     month: "long",
-    day: "numeric"
+    day: "numeric",
+    timeZone: "Asia/Jakarta"
   }) : "Semua Waktu";
 
   // Ambil semua booking yang terverifikasi (memiliki nomor antrean)
@@ -177,6 +179,7 @@ export default async function AdminFCFSPage(props: {
 
   return (
     <div className="space-y-6">
+      <RefreshDashboard interval={3000} />
       {/* Header Laporan */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b pb-5 print:border-none print:pb-0">
         <div>
@@ -285,7 +288,7 @@ export default async function AdminFCFSPage(props: {
                       </td>
                       {/* Tanggal */}
                       <td className="px-4 py-3 text-center text-xs text-muted-foreground">
-                        {item.bookingDate.toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}
+                        {item.bookingDate.toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' })}
                       </td>
                       {/* Estimasi Waktu Tunggu */}
                       <td className="px-4 py-3 text-center font-semibold text-xs text-amber-600">

@@ -194,6 +194,7 @@ export default async function CashflowPage(props: {
                           day: "numeric",
                           month: "short",
                           year: "numeric",
+                          timeZone: 'Asia/Jakarta'
                         })}
                       </td>
                       <td className="px-4 py-3">

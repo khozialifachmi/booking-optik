@@ -33,7 +33,7 @@ export default async function QueueDisplayPage() {
 
   return (
     <div className="min-h-svh bg-gradient-to-br from-background via-background to-primary/5">
-      <RefreshDashboard interval={15000} />
+      <RefreshDashboard interval={3000} />
       {/* Header */}
       <header className="border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 md:px-6">
@@ -192,7 +192,7 @@ export default async function QueueDisplayPage() {
 
           {/* Auto refresh note */}
           <p className="text-center text-xs text-muted-foreground">
-            Halaman ini akan diperbarui otomatis setiap 15 detik
+            Halaman ini akan diperbarui otomatis secara real-time
           </p>
         </div>
       </div>

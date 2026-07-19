@@ -20,15 +20,18 @@ export default async function AdminCustomersPage(props: {
   const q = params?.q?.toLowerCase() || "";
   const days = params?.days || "0";
 
-  // Gunakan tanggal UTC Midnight untuk mencocokkan penyimpanan di database (bookingDate @db.Date)
+  // Tanggal hari ini di Jakarta
   const now = new Date();
-  const shiftedNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+  const jakartaOffset = 7 * 60 * 60 * 1000;
+  const jakartaTime = new Date(now.getTime() + jakartaOffset);
+  
+  // Start of today in Jakarta Time represented in UTC (which is 17:00:00 UTC yesterday)
   const todayDateUTC = new Date(Date.UTC(
-      shiftedNow.getUTCFullYear(),
-      shiftedNow.getUTCMonth(),
-      shiftedNow.getUTCDate(),
+      jakartaTime.getUTCFullYear(),
+      jakartaTime.getUTCMonth(),
+      jakartaTime.getUTCDate(),
       0, 0, 0, 0
-  ));
+  ) - jakartaOffset);
 
   let targetDate: Date | null = new Date(todayDateUTC);
 
@@ -203,7 +206,7 @@ export default async function AdminCustomersPage(props: {
                       </td>
                       <td className="px-4 py-3 text-sm font-bold text-primary whitespace-nowrap">{cust.totalVisits} kali</td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-muted-foreground">
-                        {cust.lastVisit.toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
+                        {cust.lastVisit.toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Jakarta' })}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-center">
                         <DeleteCustomerButton name={cust.name} phone={cust.phone} />

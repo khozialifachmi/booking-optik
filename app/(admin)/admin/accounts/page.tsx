@@ -27,8 +27,10 @@ export default async function AdminAccountsPage(props: {
   const now = new Date();
   const jakartaOffset = 7 * 60 * 60 * 1000;
   const jakartaTime = new Date(now.getTime() + jakartaOffset);
-  const todayStart = new Date(Date.UTC(jakartaTime.getUTCFullYear(), jakartaTime.getUTCMonth(), jakartaTime.getUTCDate(), 0, 0, 0, 0));
-  const todayEnd   = new Date(Date.UTC(jakartaTime.getUTCFullYear(), jakartaTime.getUTCMonth(), jakartaTime.getUTCDate(), 23, 59, 59, 999));
+  
+  // Start of today in Jakarta Time represented in UTC (which is 17:00:00 UTC yesterday)
+  const todayStart = new Date(Date.UTC(jakartaTime.getUTCFullYear(), jakartaTime.getUTCMonth(), jakartaTime.getUTCDate(), 0, 0, 0, 0) - jakartaOffset);
+  const todayEnd   = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000 - 1);
 
   // Hitung target Date berdasarkan filter days
   let targetDate: Date | null = new Date(todayStart);
@@ -166,7 +168,8 @@ export default async function AdminAccountsPage(props: {
                       {new Date(user.createdAt).toLocaleDateString("id-ID", {
                         day: 'numeric',
                         month: 'long',
-                        year: 'numeric'
+                        year: 'numeric',
+                        timeZone: 'Asia/Jakarta'
                       })}
                     </td>
                     <td className="px-6 py-4 text-right">

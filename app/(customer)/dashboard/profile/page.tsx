@@ -49,7 +49,7 @@ export default async function CustomerProfilePage() {
                 <div className="bg-primary/10 px-4 py-2 rounded-2xl border border-primary/20">
                     <p className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none mb-1">Terakhir Diperbarui</p>
                     <p className="text-sm font-bold text-primary/80 leading-none">
-                        {new Date(profileResult.user.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        {new Date(profileResult.user.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Jakarta' })}
                     </p>
                 </div>
             </div>

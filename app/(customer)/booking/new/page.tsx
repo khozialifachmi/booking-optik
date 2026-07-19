@@ -11,16 +11,24 @@ export const metadata: Metadata = {
 };
 
 export default async function NewBookingPage() {
-  const [session, settingsRes] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
-    getQueueSettingsAction()
-  ]);
+  let session = null;
+  let settingsRes = null;
   
-  if (!session?.user?.id) {
-    return redirect("/login");
+  try {
+    const reqHeaders = await headers();
+    [session, settingsRes] = await Promise.all([
+      auth.api.getSession({ headers: reqHeaders }).catch(() => null),
+      getQueueSettingsAction().catch(() => ({ success: false, data: null }))
+    ]);
+  } catch (error) {
+    console.error("Error loading new booking page:", error);
   }
 
-  const settings = settingsRes.success ? settingsRes.data : null;
+  // We don't redirect to login here because the layout.tsx already handles authentication.
+  // If session is missing due to a transient error, we still render the page.
+  // The layout will redirect to login if the user is truly not authenticated.
+  
+  const settings = settingsRes?.success ? settingsRes.data : null;
 
   return (
     <div className="space-y-6">

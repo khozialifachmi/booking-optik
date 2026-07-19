@@ -121,7 +121,7 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
 
     return (
       <div className="space-y-6">
-        <RefreshDashboard interval={15000} />
+        <RefreshDashboard interval={3000} />
 
         {/* Real-time Monitoring Banner - Only show when calling */}
         {nextBooking?.status === "calling" && (
@@ -348,7 +348,7 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                           })()}
                           serviceType={nextBooking.serviceType}
                           bookingTime={formatJakartaTime(nextBooking.createdAt)}
-                          bookingDate={nextBooking.createdAt.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                          bookingDate={nextBooking.createdAt.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Jakarta' })}
                         />
                       </div>
                     )}
@@ -411,7 +411,7 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
                               {record.booking?.serviceType || "Pemeriksaan Mata"}
                             </CardTitle>
                             <span className="text-[10px] text-emerald-600 font-medium">
-                              {new Date(record.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              {new Date(record.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' })}
                             </span>
                           </div>
                         </CardHeader>
