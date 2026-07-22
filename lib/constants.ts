@@ -53,7 +53,6 @@ export const ADMIN_NAV = [
   { label: "Semua Booking", href: "/admin/bookings", icon: "ClipboardList" },
   { label: "Perhitungan FCFS", href: "/admin/fcfs", icon: "Calculator" },
   { label: "Data Pelanggan", href: "/admin/customers", icon: "Users" },
-  { label: "Keuangan", href: "/admin/cashflow", icon: "Wallet" },
   { label: "Daftar Akun", href: "/admin/accounts", icon: "UserCheck" },
   { label: "Pengaturan", href: "/admin/settings", icon: "Settings" },
 ] as const;

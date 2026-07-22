@@ -55,49 +55,7 @@ export function BookingForm({ settings }: { settings: any }) {
     fetchProspective();
   }, [selectedDate, setValue]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validasi Ukuran File (Maksimal 1MB)
-      if (file.size > 1024 * 1024) {
-        Swal.fire({
-          title: "File Terlalu Besar",
-          text: "Ukuran bukti transfer maksimal adalah 1MB. Silakan gunakan foto yang lebih kecil atau kompres terlebih dahulu.",
-          icon: "error"
-        });
-        e.target.value = ""; // Kosongkan input
-        return;
-      }
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // Kompresi Gambar sebelum disimpan ke State
-        const img = new Image();
-        img.src = reader.result as string;
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const MAX_WIDTH = 800;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx?.drawImage(img, 0, 0, width, height);
-          
-          // Ubah ke Base64 dengan kualitas 0.7 (Kompresi Tinggi)
-          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
-          setValue("paymentProof", compressedBase64, { shouldValidate: true });
-        };
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   // No longer fetching booked slots as it's FCFS now
 
@@ -128,10 +86,8 @@ export function BookingForm({ settings }: { settings: any }) {
           <p><strong>Nama:</strong> ${data.namaLengkap}</p>
           <p><strong>Layanan:</strong> ${data.jenisLayanan}</p>
           <p><strong>Tanggal:</strong> ${result.data?.tanggal}</p>
-          <p class="text-purple-600 font-bold">Status: Tunggu Sampai Admin Konfirmasi Pendaftaran</p>
-          <p class="text-xs text-muted-foreground italic">Nomor antrian akan muncul di Dashboard setelah Admin mengonfirmasi bukti transfer Anda.</p>
-          <hr style="margin: 10px 0; border-top: 1px solid #e5e7eb;" />
-          <p style="color: #ea580c; font-weight: 500; font-size: 1.1em;">Biaya Pemeriksaan: Rp 15.000</p>
+          <p class="text-purple-600 font-bold">Status: Anda sudah masuk ke dalam antrian</p>
+          <p class="text-xs text-muted-foreground italic">Nomor antrian dapat dilihat langsung di Dashboard Anda.</p>
         </div>
       `,
       icon: "success",
@@ -302,32 +258,7 @@ export function BookingForm({ settings }: { settings: any }) {
               </div>
             </div>
 
-            <div className="space-y-4 pt-4 border-t border-dashed">
-              <div className="flex items-center gap-2 text-amber-600">
-                <Info className="h-4 w-4" />
-                <span className="text-sm font-medium">Pembayaran Transfer (Pemeriksaan: Rp 15.000)</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Silakan transfer ke rekening: <strong>BCA 7391653694 a/n Nira Ramadhanti</strong>. Unggah bukti transfer di bawah ini.</p>
 
-              <div className="space-y-2">
-                <Label htmlFor="paymentProof">Unggah Bukti Transfer <span className="text-destructive">*</span></Label>
-                <div className="flex flex-col gap-4">
-                  <input
-                    type="file"
-                    id="paymentProof"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-                  />
-                  {watch("paymentProof") && (
-                    <div className="relative w-32 h-32 border rounded-lg overflow-hidden bg-muted">
-                      <img src={watch("paymentProof")} alt="Preview" className="object-cover w-full h-full" />
-                    </div>
-                  )}
-                </div>
-                {errors.paymentProof && <p className="text-xs text-destructive">{errors.paymentProof.message}</p>}
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
@@ -354,10 +285,7 @@ export function BookingForm({ settings }: { settings: any }) {
               <span className="text-sm font-medium text-muted-foreground">Status Pelayanan</span>
               <span className="text-right font-medium text-primary">Pemeriksaan Mata</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-muted-foreground">Biaya Pemeriksaan</span>
-              <span className="text-right font-bold text-amber-600 dark:text-amber-500">Rp 15.000</span>
-            </div>
+
 
             {!watch("tanggalBooking") && (
               <div className="flex items-start gap-2 rounded-lg bg-orange-500/10 p-3 text-sm text-orange-600 dark:text-orange-400">
@@ -375,7 +303,7 @@ export function BookingForm({ settings }: { settings: any }) {
           disabled={!isValid || isSubmitting}
         >
           <CalendarPlus className="h-4 w-4" />
-          {isSubmitting ? "Memproses..." : "Daftar (Rp 15.000)"}
+          {isSubmitting ? "Memproses..." : "Daftar"}
         </Button>
       </div>
     </form>

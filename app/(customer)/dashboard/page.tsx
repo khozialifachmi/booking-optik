@@ -117,7 +117,6 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
     ]);
 
     const nextBooking = stats.nextBooking;
-    const hasUnverified = stats.history.some(b => b.status === "unverified");
 
     return (
       <div className="space-y-6">
@@ -139,89 +138,7 @@ async function DashboardContent({ userId, userName }: { userId: string; userName
           <LiveQueueSection data={liveQueue.data} />
         )}
 
-      {/* STATUS KONFIRMASI: Tampil ketika ada booking dengan status unverified */}
-      {hasUnverified && (() => {
-        const unverifiedBooking = stats.history.find(b => b.status === "unverified");
-        if (!unverifiedBooking) return null;
-        
-        const customerName = (() => {
-          if (unverifiedBooking?.notes?.startsWith("Nama: ")) {
-            return unverifiedBooking.notes.split(" | ")[0].replace("Nama: ", "");
-          }
-          return userName || "Pelanggan";
-        })();
-        const serviceType = unverifiedBooking?.serviceType || "-";
-        const rawDate = new Date(unverifiedBooking.bookingDate);
-        // Force ke tengah hari agar toLocaleDateString tidak bergeser hari
-        rawDate.setUTCHours(12, 0, 0, 0);
-        
-        const bookingDate = new Intl.DateTimeFormat('id-ID', { 
-          weekday: 'long', 
-          day: 'numeric', 
-          month: 'long', 
-          year: 'numeric',
-          timeZone: 'Asia/Jakarta' 
-        }).format(rawDate);
-          
-        const registeredAt = unverifiedBooking?.createdAt
-          ? new Intl.DateTimeFormat('id-ID', { 
-              hour: '2-digit', 
-              minute: '2-digit',
-              timeZone: 'Asia/Jakarta'
-            }).format(new Date(unverifiedBooking.createdAt)) + " WIB"
-          : "-";
 
-        return (
-          <div className="bg-amber-500/10 border-2 border-amber-500/30 rounded-2xl shadow-sm animate-in fade-in slide-in-from-top-2 duration-700 overflow-hidden">
-            {/* Header Banner */}
-            <div className="bg-amber-500/20 px-5 py-3 flex items-center gap-3 border-b border-amber-500/20">
-              <div className="h-8 w-8 rounded-full bg-amber-500/30 flex items-center justify-center flex-shrink-0">
-                <Clock className="h-4 w-4 text-amber-700 animate-pulse" />
-              </div>
-              <div className="flex-1">
-                <p className="text-amber-900 dark:text-amber-500 font-extrabold text-sm uppercase tracking-wide">Menunggu Konfirmasi Admin</p>
-                <p className="text-amber-600 dark:text-amber-400 text-xs font-medium">Pendaftaran Anda sedang diverifikasi oleh admin</p>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-amber-50 animate-ping" />
-                <span className="h-2 w-2 rounded-full bg-amber-500 absolute" />
-                <span className="text-[10px] font-bold text-amber-700 uppercase">Proses</span>
-              </div>
-            </div>
-
-            {/* Detail Pendaftaran */}
-            <div className="p-5 space-y-4">
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div className="bg-white/60 rounded-xl p-3 border border-amber-200/60">
-                  <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Nama</p>
-                  <p className="font-semibold text-amber-900 truncate">{customerName}</p>
-                </div>
-                <div className="bg-white/60 rounded-xl p-3 border border-amber-200/60">
-                  <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Jenis Layanan</p>
-                  <p className="font-semibold text-amber-900 truncate">{serviceType}</p>
-                </div>
-                <div className="bg-white/60 rounded-xl p-3 border border-amber-200/60">
-                  <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Tanggal Booking</p>
-                  <p className="font-semibold text-amber-900 text-xs">{bookingDate}</p>
-                </div>
-                <div className="bg-white/60 rounded-xl p-3 border border-amber-200/60">
-                  <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Waktu Daftar</p>
-                  <p className="font-semibold text-amber-900">{registeredAt}</p>
-                </div>
-              </div>
-
-              {/* Keterangan */}
-              <div className="flex items-start gap-2.5 bg-amber-50/80 border border-amber-200/60 rounded-xl p-3">
-                <Clock className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                <p className="text-amber-800 text-xs leading-relaxed">
-                  Bukti pembayaran Anda sedang diperiksa oleh admin. Setelah dikonfirmasi, Anda akan mendapatkan{" "}
-                  <span className="font-bold">nomor antrian</span> dan dapat mencetak struk.
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
 
       {/* Status: Calling / Serving / Waiting (Live Notification) */}
       {nextBooking && (

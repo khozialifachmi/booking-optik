@@ -155,16 +155,27 @@ export async function createBookingAction(data: BookingFormValues) {
         });
     }
 
-    // 4. Simpan ke database dengan status unverified
+    // 4. Dapatkan nomor antrian berikutnya untuk hari tersebut
+    const latestBookingForQueue = await prisma.booking.findFirst({
+        where: {
+            bookingDate: targetDateUTC,
+            queueNumber: { not: null }
+        },
+        orderBy: { queueNumber: 'desc' }
+    });
+    const nextQueue = latestBookingForQueue?.queueNumber ? latestBookingForQueue.queueNumber + 1 : 1;
+
+    // 5. Simpan ke database dengan status waiting dan nomor antrian
     const booking = await prisma.booking.create({
         data: {
              userId: userId, 
              bookingDate: targetDateUTC,
-             queueNumber: null, 
+             queueNumber: nextQueue, 
              serviceType: parsedData.jenisLayanan,
              estimatedServiceTime: bookingEstimatedTime,
-             status: "unverified", 
-             paymentProof: parsedData.paymentProof, // Base64 image
+             status: "waiting",
+             sortPriority: nextQueue,
+             paymentProof: null, // Base64 image dihilangkan
              notes: `Nama: ${parsedData.namaLengkap} | HP: ${parsedData.noHandphone} | Usia: ${parsedData.usia} | Kelamin: ${parsedData.jenisKelamin} | Keluhan: ${parsedData.keluhanMata} | Kacamata: ${parsedData.riwayatKacamata || "-"}`,
         }
     });
@@ -172,12 +183,15 @@ export async function createBookingAction(data: BookingFormValues) {
     // Validasi Cache
     revalidatePath("/dashboard");
     revalidatePath("/booking");
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/fcfs");
     
     return { 
         success: true, 
         data: {
             id: booking.id,
-            status: "unverified",
+            status: "waiting",
+            queueNumber: nextQueue,
             tanggal: targetDate.toLocaleDateString("id-ID")
         } 
     };

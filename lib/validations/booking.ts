@@ -14,7 +14,6 @@ export const bookingFormSchema = z.object({
   waktuBooking: z.string().optional(),
   riwayatKacamata: z.string().min(1, { message: "Isi riwayat kacamata (ketik '-' jika tidak ada)" }),
   pernahPeriksa: z.enum(["Sudah", "Belum"] as const, { message: "Pilih status periksa" }),
-  paymentProof: z.string().min(1, { message: "Bukti pembayaran wajib diunggah" }),
 });
 
 export type BookingFormValues = z.infer<typeof bookingFormSchema>;

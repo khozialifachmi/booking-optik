@@ -76,11 +76,6 @@ const statusConfig = {
     variant: "outline" as const,
     className: "border-rose-300 text-rose-700 bg-rose-50",
   },
-  unverified: {
-    label: "Menunggu Konfirmasi",
-    variant: "outline" as const,
-    className: "border-purple-300 text-purple-700 bg-purple-50",
-  },
 };
 
 function AdminDashboardSkeleton() {
@@ -410,27 +405,11 @@ async function AdminDashboardContent({
                       <td className="px-4 py-3">
                         <div className="flex flex-col gap-1">
                           <Badge className={config.className}>{config.label}</Badge>
-                          {(item.status === "unverified" || item.status === "waiting") && (
-                            <a href={`/api/payment-proof/${item.id}`} target="_blank" rel="noreferrer" className="text-[10px] flex items-center gap-1 text-primary hover:underline">
-                              <ImageIcon className="h-3 w-3" /> Lihat Bukti
-                            </a>
-                          )}
                         </div>
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex justify-end items-center gap-2">
-                          {item.status === "unverified" && (
-                            <form
-                              action={async () => {
-                                "use server";
-                                await verifyPaymentAction(item.id);
-                              }}
-                            >
-                              <Button type="submit" variant="default" size="sm" className="h-8 gap-1 bg-emerald-600 hover:bg-emerald-700">
-                                <CheckCircle className="h-3 w-3" /> Konfirmasi
-                              </Button>
-                            </form>
-                          )}
+
                           {(item.status === "calling" || item.status === "serving") && (
                             <div className="flex gap-1">
                               <RecallButton queueNumber={item.queueNumber || 0} />
