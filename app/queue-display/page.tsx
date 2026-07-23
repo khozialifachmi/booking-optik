@@ -163,23 +163,23 @@ export default async function QueueDisplayPage() {
             </Card>
 
             {/* Missed / Terlewat */}
-            <Card className="border-border/50 border-rose-100 bg-rose-50/10">
+            <Card className="border-border/50 border-rose-100 dark:border-rose-900/50 bg-rose-50/10 dark:bg-rose-950/10">
                 <CardHeader>
-                <CardTitle className="text-lg text-rose-700">Antrian Terlewat</CardTitle>
+                <CardTitle className="text-lg text-rose-700 dark:text-rose-400">Antrian Terlewat</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                 {queueData.missed && queueData.missed.length > 0 ? queueData.missed.map((item) => (
                     <div
                     key={item.queueNumber}
-                    className="flex items-center justify-between rounded-lg border border-rose-200 bg-white px-4 py-3"
+                    className="flex items-center justify-between rounded-lg border border-rose-200 dark:border-rose-900/50 bg-background px-4 py-3"
                     >
                     <div className="flex items-center gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-100 font-bold text-rose-600">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-950/50 font-bold text-rose-600 dark:text-rose-400">
                         {item.queueNumber.toString().padStart(2, "0")}
                         </span>
-                        <span className="font-medium text-rose-900">{item.name}</span>
+                        <span className="font-medium text-rose-900 dark:text-rose-100">{item.name}</span>
                     </div>
-                    <Badge variant="outline" className="border-rose-200 text-rose-600 bg-rose-50">
+                    <Badge variant="outline" className="border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20">
                         Terlewat
                     </Badge>
                     </div>

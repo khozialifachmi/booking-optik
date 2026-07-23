@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users } from "lucide-react";
+import { Clock, Users, AlertCircle } from "lucide-react";
 
 interface LiveQueueSectionProps {
   data: {
@@ -33,6 +33,10 @@ interface LiveQueueSectionProps {
       closeTime: string;
     };
     pendingConfirmation?: boolean;
+    missed?: Array<{
+      queueNumber: number;
+      name: string;
+    }>;
   };
 }
 
@@ -140,6 +144,35 @@ export function LiveQueueSection({ data }: LiveQueueSectionProps) {
                     </p>
                     <Badge variant="outline" className="mt-2 text-[10px] font-medium text-orange-600/80 border-orange-500/30 bg-orange-50">
                        Est. {item.estimatedTime}
+                    </Badge>
+                 </CardContent>
+               </Card>
+             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Missed Queue (Large Cards) */}
+      {data.missed && data.missed.length > 0 && (
+        <div className="space-y-3 mt-8">
+          <h3 className="text-sm font-semibold flex items-center gap-2 text-rose-600 dark:text-rose-400 uppercase tracking-wider pl-1">
+             <AlertCircle className="h-4 w-4" />
+             Antrian Terlewat
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+             {data.missed.map((item) => (
+               <Card key={`missed-${item.queueNumber}`} className="border-rose-500/30 bg-rose-500/5 dark:bg-rose-950/10 shadow-sm">
+                 <CardContent className="flex flex-col items-center justify-center py-4 px-2">
+                    <div className="inline-flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-rose-100 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 shadow-sm mb-3">
+                      <span className="text-2xl sm:text-3xl font-bold">
+                        {item.queueNumber.toString().padStart(2, "0")}
+                      </span>
+                    </div>
+                    <p className="text-base font-bold text-rose-700 dark:text-rose-300 text-center line-clamp-1 w-full px-1">
+                      {item.name}
+                    </p>
+                    <Badge variant="outline" className="mt-2 text-[10px] font-medium text-rose-600/80 dark:text-rose-400/80 border-rose-500/30 bg-rose-50 dark:bg-rose-950/20">
+                       Terlewat
                     </Badge>
                  </CardContent>
                </Card>

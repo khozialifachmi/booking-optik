@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 // Triggering config reload to refresh proxy/middleware cache
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   // Aktifkan kompresi gzip untuk semua response
   compress: true,
   
